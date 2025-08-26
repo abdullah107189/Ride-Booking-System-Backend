@@ -1,18 +1,19 @@
 import mongoose from "mongoose";
 import { Server } from "http";
 import app from "./app";
-const port = 3000;
+import { envVars } from "./app/config/env";
 let server: Server;
 const startServer = async () => {
   try {
-    const url = "";
-    if (!url) {
+    const uri = "mongodb://localhost:27017";
+
+    if (!uri) {
       throw new Error("Database URL is not defined in environment variables.");
     }
-    await mongoose.connect("");
+    await mongoose.connect(uri);
     console.log("server connected");
-    server = app.listen(port, () => {
-      console.log(`Server is listening on port :-- ${port}`);
+    server = app.listen(envVars.PORT, () => {
+      console.log(`Server is listening on port :-- ${envVars.PORT}`);
     });
   } catch (error) {
     console.log(error);
