@@ -16,6 +16,7 @@ export interface IEarning {
   date: Date;
 }
 export interface IUser {
+  _id?: string;
   name: string;
   email: string;
   password: string;

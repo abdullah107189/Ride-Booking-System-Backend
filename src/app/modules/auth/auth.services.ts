@@ -2,6 +2,7 @@ import { IUser } from "../user/user.interface";
 import User from "../user/user.model";
 import bcryptjs from "bcryptjs";
 import { envVars } from "../../config/env";
+import { createTokens } from "../../utils/userTokens";
 
 const createUser = async (payload: IUser) => {
   const { password, ...rest } = payload;
@@ -9,11 +10,13 @@ const createUser = async (payload: IUser) => {
     password as string,
     Number(envVars.bcrypt_salt_round)
   );
+
   const user = await User.create({
     password: hashedPassword,
     ...rest,
   });
-  return user;
+  const { password: pass, ...result } = user.toObject();
+  return result;
 };
 export const AuthServices = {
   createUser,
