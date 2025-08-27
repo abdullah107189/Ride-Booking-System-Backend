@@ -38,7 +38,7 @@ const rideSchema = new Schema<IRide>(
 );
 
 // Indexes for performance
-rideSchema.index({ Ride: 1 });
+rideSchema.index({ rider: 1 });
 rideSchema.index({ driver: 1 });
 
 export const Ride = model<IRide>("Ride", rideSchema);
