@@ -1,9 +1,8 @@
-import { IUser } from "../user/user.interface";
-import bcryptjs from "bcryptjs";
-import { envVars } from "../../config/env";
-import { createTokens } from "../../utils/userTokens";
-import User from "../user/user.model";
-const showRideRequests = async () => {};
+import { Ride } from "../ride/ride.model";
+const showRideRequests = async () => {
+  const allRides = await Ride.find({});
+  return allRides;
+};
 
 export const DriverService = {
   showRideRequests,
