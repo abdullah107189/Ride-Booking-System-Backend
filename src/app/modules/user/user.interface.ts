@@ -2,7 +2,7 @@ import { IEarning, IVehicleInfo } from "../driver/driver.interface";
 
 export enum ROLE {
   admin = "admin",
-  rider = "rider",
+  Ride = "Ride",
   driver = "driver",
 }
 export type UserStatus = "active" | "blocked";
