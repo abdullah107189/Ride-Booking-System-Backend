@@ -3,7 +3,6 @@ import { catchAsync } from "../../utils/catchAsync";
 import AppError from "../../errorHelpers/AppError";
 import httpStatus from "http-status-codes";
 import { sendResponse } from "../../utils/sendResponse";
-import { Ride } from "./ride.model";
 import { RideService } from "./ride.service";
 import User from "../user/user.model";
 
@@ -22,7 +21,17 @@ const createRequest = catchAsync(async (req: Request, res: Response) => {
     message: "Driver created successfully",
   });
 });
+const findNearbyDrivers = catchAsync(async (req: Request, res: Response) => {
+  const riderInfo = await RideService.findNearbyDrivers(req.params.rideId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    data: riderInfo,
+    message: "Filter nearby drivers get successful",
+  });
+});
 
 export const RideController = {
   createRequest,
+  findNearbyDrivers,
 };

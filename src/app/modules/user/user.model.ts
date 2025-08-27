@@ -49,6 +49,6 @@ UserSchema.pre("save", function (next) {
   }
   next();
 });
-
+UserSchema.index({ "currentLocation.location": "2dsphere" });
 const User = model<IUser>("User", UserSchema);
 export default User;
