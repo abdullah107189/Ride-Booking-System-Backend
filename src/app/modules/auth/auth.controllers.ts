@@ -22,6 +22,7 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
     message: "User created successfully",
   });
 });
+
 export const AuthControllers = {
   createUser,
 };

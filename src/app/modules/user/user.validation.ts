@@ -1,5 +1,21 @@
 import z from "zod";
 
+const vehicleInfoZodSchema = z.object({
+  licensePlate: z
+    .string()
+    .nonempty("License Plate is required.")
+    .regex(/^[A-Z0-9-]*$/, "Invalid license plate format."),
+  model: z.string().nonempty("Model is required."),
+  carType: z.enum(["car", "bike", "cng"]).default("car"),
+});
+
+const currentLocationZodSchema = z.object({
+  type: z.string().default("Point"),
+  coordinates: z
+    .array(z.number())
+    .length(2, "Coordinates must contain longitude and latitude.")
+    .default([0, 0]),
+});
 export const createUserZodSchema = z.object({
   name: z
     .string("Name must be a string.")
@@ -33,4 +49,7 @@ export const createUserZodSchema = z.object({
         "Phone number must be valid for Bangladesh. Format: +8801XXXXXXXXX or 01XXXXXXXXX",
     }),
   role: z.string("Role must be a string"),
+  // driver
+  vehicleInfo: vehicleInfoZodSchema.optional(),
+  currentLocation: currentLocationZodSchema.optional(),
 });

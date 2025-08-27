@@ -2,7 +2,6 @@ import { IUser } from "../user/user.interface";
 import User from "../user/user.model";
 import bcryptjs from "bcryptjs";
 import { envVars } from "../../config/env";
-import { createTokens } from "../../utils/userTokens";
 
 const createUser = async (payload: IUser) => {
   const { password, ...rest } = payload;

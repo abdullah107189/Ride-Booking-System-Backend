@@ -1,20 +1,12 @@
+import { IEarning, IVehicleInfo } from "../driver/driver.interface";
+
 export enum ROLE {
   admin = "admin",
   rider = "rider",
   driver = "driver",
 }
-
 export type UserStatus = "active" | "blocked";
-export interface IVehicleInfo {
-  type: string;
-  licensePlate: string;
-  model: string;
-}
-export interface IEarning {
-  rideId: string;
-  amount: number;
-  date: Date;
-}
+
 export interface IUser {
   _id?: string;
   name: string;
@@ -23,4 +15,16 @@ export interface IUser {
   phone: string;
   role: ROLE;
   isBlocked: boolean;
+  // if driver
+  isApproved?: boolean;
+  isOnline?: boolean;
+  vehicleInfo?: IVehicleInfo;
+  currentLocation?: {
+    type: "Point";
+    coordinates: [number, number]; // [longitude, latitude]
+  };
+  totalEarnings?: number;
+  earnings?: IEarning[];
+  rating?: number;
+  totalRides?: number;
 }

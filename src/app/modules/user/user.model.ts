@@ -1,44 +1,57 @@
 import { model, Schema } from "mongoose";
 import { IUser, ROLE } from "./user.interface";
+import { earningSchema, vehicleInfoSchema } from "../driver/driver.model";
 
-const userSchema = new Schema<IUser>(
+const UserSchema = new Schema<IUser>(
   {
-    name: { type: String, required: true, trim: true },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true,
-      lowercase: true,
-    },
-    password: { type: String, required: true, minlength: 6 },
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
     phone: { type: String, required: true },
-    role: {
-      type: String,
-      enum: Object.values(ROLE),
-      default: ROLE.rider,
-      required: true,
-    },
+    role: { type: String, enum: Object.values(ROLE), required: true },
     isBlocked: { type: Boolean, default: false },
+
+    // Driver specific fields
+    isApproved: { type: Boolean, default: false },
+    isOnline: { type: Boolean, default: false },
+    vehicleInfo: { type: vehicleInfoSchema },
+    currentLocation: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number],
+        default: [0, 0],
+      },
+    },
+    totalEarnings: { type: Number, default: 0 },
+    earnings: [earningSchema],
+    rating: { type: Number, default: 0, min: 0, max: 5 },
+    totalRides: { type: Number, default: 0 },
   },
   { timestamps: true, versionKey: false }
 );
 
-// // Hash password before saving
-// userSchema.pre("save", async function (next) {
-//   if (!this.isModified("password")) return next();
+// Conditional validation middleware
+UserSchema.pre("save", function (next) {
+  if (this.role === ROLE.driver) {
+    if (!this.vehicleInfo) {
+      return next(new Error("Vehicle Info is required for driver role"));
+    }
+  } else {
+    this.isApproved = undefined;
+    this.isOnline = undefined;
+    this.vehicleInfo = undefined;
+    this.currentLocation = undefined;
+    this.totalEarnings = undefined;
+    this.earnings = undefined;
+    this.rating = undefined;
+    this.totalRides = undefined;
+  }
+  next();
+});
 
-//   const salt = await bcrypt.genSalt(10);
-//   this.password = await bcrypt.hash(this.password, salt);
-//   next();
-// });
-
-// Compare password method
-// userSchema.methods.comparePassword = async function (
-//   candidatePassword: string
-// ): Promise<boolean> {
-//   return bcrypt.compare(candidatePassword, this.password);
-// };
-
-const User = model<IUser>("User", userSchema);
+const User = model<IUser>("User", UserSchema);
 export default User;
