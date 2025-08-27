@@ -5,18 +5,19 @@ export const rideZodSchema = z.object({
   rider: z.string("Invalid rider ID."),
   driver: z.string("Invalid driver ID.").optional(),
   pickupLocation: z.object({
-    address: z.string().min(5, "Address must be at least 5 characters long."),
-    coordinates: z.object({
-      lat: z.number().min(-90).max(90),
-      lng: z.number().min(-180).max(180),
+    location: z.object({
+      type: z.literal("Point"),
+      coordinates: z.array(z.number()).length(2),
     }),
+    address: z.string().min(5, "Address must be at least 5 characters long."),
   }),
+
   destinationLocation: z.object({
-    address: z.string().min(5, "Address must be at least 5 characters long."),
-    coordinates: z.object({
-      lat: z.number().min(-90).max(90),
-      lng: z.number().min(-180).max(180),
+    location: z.object({
+      type: z.literal("Point"),
+      coordinates: z.array(z.number()).length(2),
     }),
+    address: z.string().min(5, "Address must be at least 5 characters long."),
   }),
   status: z
     .enum(Object.values(RideStatus) as [string, ...string[]])

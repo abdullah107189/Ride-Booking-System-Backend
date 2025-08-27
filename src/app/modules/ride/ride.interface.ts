@@ -7,12 +7,13 @@ export enum RideStatus {
   completed = "completed",
   canceled = "canceled",
 }
+export interface IGeoJSONPoint extends Document {
+  type: "Point";
+  coordinates: [number, number];
+}
 export interface ILocation {
+  location: IGeoJSONPoint;
   address: string;
-  coordinates: {
-    lat: number;
-    lng: number;
-  };
 }
 
 export interface IStatusHistory {

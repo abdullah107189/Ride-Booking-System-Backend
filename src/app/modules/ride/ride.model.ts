@@ -1,14 +1,22 @@
 import { model, Schema } from "mongoose";
 import { ILocation, IRide, IStatusHistory, RideStatus } from "./ride.interface";
+import { optional } from "zod";
 
-// Ride Schema
-const locationSchema = new Schema<ILocation>({
-  address: { type: String, required: true, minlength: 5 },
-  coordinates: {
-    lat: { type: Number, required: true, min: -90, max: 90 },
-    lng: { type: Number, required: true, min: -180, max: 180 },
+// GeoJSON Point Schema
+export const geoJsonPointSchema = new Schema(
+  {
+    type: {
+      type: String,
+      enum: ["Point"],
+      default: "Point",
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+      default: [0, 0],
+    },
   },
-});
+  { _id: false, versionKey: false }
+);
 
 const statusHistorySchema = new Schema<IStatusHistory>({
   updateStatus: {
@@ -18,16 +26,30 @@ const statusHistorySchema = new Schema<IStatusHistory>({
   },
   timestamp: { type: Date, default: Date.now },
 });
+
 const rideSchema = new Schema<IRide>(
   {
     rider: { type: Schema.Types.ObjectId, ref: "User", required: true },
     driver: { type: Schema.Types.ObjectId, ref: "User" },
-    pickupLocation: { type: locationSchema, required: true },
-    destinationLocation: { type: locationSchema, required: true },
+
+    pickupLocation: {
+      location: geoJsonPointSchema,
+      address: {
+        type: String,
+        required: true,
+      },
+    },
+    destinationLocation: {
+      location: geoJsonPointSchema,
+      address: {
+        type: String,
+        required: true,
+      },
+    },
     status: {
       type: String,
       enum: Object.values(RideStatus) as string[],
-      default: "requested",
+      default: RideStatus.requested,
     },
     statusHistory: {
       type: [statusHistorySchema],
@@ -37,8 +59,7 @@ const rideSchema = new Schema<IRide>(
   { timestamps: true }
 );
 
-// Indexes for performance
-rideSchema.index({ rider: 1 });
-rideSchema.index({ driver: 1 });
+rideSchema.index({ "pickupLocation.location": "2dsphere" });
+rideSchema.index({ "destinationLocation.location": "2dsphere" });
 
 export const Ride = model<IRide>("Ride", rideSchema);

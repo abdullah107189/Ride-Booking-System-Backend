@@ -10,11 +10,16 @@ const vehicleInfoZodSchema = z.object({
 });
 
 const currentLocationZodSchema = z.object({
-  type: z.string().default("Point"),
-  coordinates: z
-    .array(z.number())
-    .length(2, "Coordinates must contain longitude and latitude.")
-    .default([0, 0]),
+  location: z
+    .object({
+      type: z.literal("Point"),
+      coordinates: z.array(z.number()).length(2),
+    })
+    .optional(),
+  address: z
+    .string()
+    .min(5, "Address must be at least 5 characters long.")
+    .optional(),
 });
 export const createUserZodSchema = z.object({
   name: z

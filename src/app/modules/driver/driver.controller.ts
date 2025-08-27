@@ -5,7 +5,7 @@ import { DriverService } from "./driver.service";
 import { sendResponse } from "../../utils/sendResponse";
 
 const showRideRequests = catchAsync(async (req: Request, res: Response) => {
-  const user = await DriverService.showRideRequests();
+  const user = await DriverService.findNearbyRides(req.user.userId);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,

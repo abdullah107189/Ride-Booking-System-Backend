@@ -1,4 +1,5 @@
 import { IEarning, IVehicleInfo } from "../driver/driver.interface";
+import { ILocation } from "../ride/ride.interface";
 
 export enum ROLE {
   admin = "admin",
@@ -19,10 +20,7 @@ export interface IUser {
   isApproved?: boolean;
   isOnline?: boolean;
   vehicleInfo?: IVehicleInfo;
-  currentLocation?: {
-    type: "Point";
-    coordinates: [number, number]; // [longitude, latitude]
-  };
+  currentLocation?: ILocation; // [longitude, latitude]
   totalEarnings?: number;
   earnings?: IEarning[];
   rating?: number;

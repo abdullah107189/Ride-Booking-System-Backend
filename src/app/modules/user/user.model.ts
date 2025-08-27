@@ -1,6 +1,7 @@
 import { model, Schema } from "mongoose";
 import { IUser, ROLE } from "./user.interface";
 import { earningSchema, vehicleInfoSchema } from "../driver/driver.model";
+import { geoJsonPointSchema } from "../ride/ride.model";
 
 const UserSchema = new Schema<IUser>(
   {
@@ -16,14 +17,10 @@ const UserSchema = new Schema<IUser>(
     isOnline: { type: Boolean, default: false },
     vehicleInfo: { type: vehicleInfoSchema },
     currentLocation: {
-      type: {
+      location: geoJsonPointSchema,
+      address: {
         type: String,
-        enum: ["Point"],
-        default: "Point",
-      },
-      coordinates: {
-        type: [Number],
-        default: [0, 0],
+        required: true,
       },
     },
     totalEarnings: { type: Number, default: 0 },
