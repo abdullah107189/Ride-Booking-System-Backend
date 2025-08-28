@@ -31,9 +31,6 @@ export const checkAuth =
       if (existingUser.isBlocked) {
         throw new AppError(httpStatus.BAD_REQUEST, "User is Blocked");
       }
-      if (existingUser.role === ROLE.driver && !existingUser.isApproved) {
-        throw new AppError(httpStatus.BAD_REQUEST, `Driver is not approved`);
-      }
 
       if (!authRoles.includes(verifiedToken.role)) {
         throw new AppError(403, "You are not permitted to view this role!!!");

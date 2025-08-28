@@ -23,7 +23,7 @@ const UserSchema = new Schema<IUser>(
         required: true,
       },
     },
-    totalEarnings: { type: Number, default: 0 },
+    totalEarnings: { type: Number, default: 0},
     earnings: [earningSchema],
     rating: { type: Number, default: 0, min: 0, max: 5 },
     totalRides: { type: Number, default: 0 },
