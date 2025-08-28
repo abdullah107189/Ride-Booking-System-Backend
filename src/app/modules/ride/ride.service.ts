@@ -62,28 +62,33 @@ const acceptsRequest = async (driverId: string, rideId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, "Driver not found.");
   }
   const rideInfo = await Ride.findById(rideId);
-  //   const activeRide = await Ride.findOne({
-  //   rider: payload.rider,
-  //   status: {
-  //     $in: [
-  //       RideStatus.requested,
-  //       RideStatus.accepted,
-  //       RideStatus.picked_up,
-  //       RideStatus.in_transit,
-  //     ],
-  //   },
-  // });
   if (!rideInfo) {
     throw new AppError(httpStatus.NOT_FOUND, "Ride not found.");
   }
   if (rideInfo.status !== RideStatus.requested) {
     throw new AppError(httpStatus.NOT_FOUND, "Accept only request rides.");
   }
-  const updateObject = { driver: driverId, status: RideStatus.accepted };
-  const updateStatus = await Ride.findByIdAndUpdate(rideId, updateObject, {
-    new: true,
-    runValidators: true,
-  });
+  if (driver.role !== "driver" || !driver.isApproved || !driver.isOnline) {
+    throw new AppError(httpStatus.FORBIDDEN, "Driver not authorized");
+  }
+  const updateObject = {
+    driver: driverId,
+    status: RideStatus.accepted,
+  };
+  const pushUpdateStatus = {
+    statusHistory: { updateStatus: "accepted", timestamp: new Date() },
+  };
+  const updateStatus = await Ride.findByIdAndUpdate(
+    rideId,
+    {
+      $set: updateObject,
+      $push: pushUpdateStatus,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
   return updateStatus;
 };
 

@@ -18,14 +18,17 @@ export const geoJsonPointSchema = new Schema(
   { _id: false, versionKey: false }
 );
 
-const statusHistorySchema = new Schema<IStatusHistory>({
-  updateStatus: {
-    type: String,
-    required: true,
-    enum: Object.values(RideStatus) as string[],
+const statusHistorySchema = new Schema<IStatusHistory>(
+  {
+    updateStatus: {
+      type: String,
+      required: true,
+      enum: Object.values(RideStatus) as string[],
+    },
+    timestamp: { type: Date, default: Date.now },
   },
-  timestamp: { type: Date, default: Date.now },
-});
+  { timestamps: false, _id: false, versionKey: false }
+);
 
 const rideSchema = new Schema<IRide>(
   {
