@@ -18,6 +18,11 @@ router.get(
   RideController.findNearbyRides
 );
 
+router.patch(
+  "/accept/:rideId",
+  checkAuth(ROLE.driver),
+  RideController.acceptsRequest
+);
 router.get(
   "/findNearbyDrivers/:rideId",
   checkAuth(ROLE.rider),

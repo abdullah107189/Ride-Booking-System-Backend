@@ -21,15 +21,7 @@ const createRequest = catchAsync(async (req: Request, res: Response) => {
     message: "Driver created successfully",
   });
 });
-const findNearbyDrivers = catchAsync(async (req: Request, res: Response) => {
-  const riderInfo = await RideService.findNearbyDrivers(req.params.rideId);
-  sendResponse(res, {
-    success: true,
-    statusCode: httpStatus.CREATED,
-    data: riderInfo,
-    message: "Filter nearby drivers get successful",
-  });
-});
+
 const findNearbyRides = catchAsync(async (req: Request, res: Response) => {
   const driverId = req.user.userId;
   const availableRides = await RideService.findNearbyRides(driverId);
@@ -40,9 +32,33 @@ const findNearbyRides = catchAsync(async (req: Request, res: Response) => {
     message: "Filter nearby drivers get successful",
   });
 });
+const acceptsRequest = catchAsync(async (req: Request, res: Response) => {
+  const driverId = req.user.userId;
+  const rideId = req.params.rideId;
+  const availableRides = await RideService.acceptsRequest(driverId, rideId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    data: availableRides,
+    message: "Ride request accepted successful",
+  });
+});
+
+const findNearbyDrivers = catchAsync(async (req: Request, res: Response) => {
+  const riderInfo = await RideService.findNearbyDrivers(req.params.rideId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    data: riderInfo,
+    message: "Filter nearby drivers get successful",
+  });
+});
 
 export const RideController = {
   createRequest,
   findNearbyRides,
+  acceptsRequest,
+
+  // TODO future
   findNearbyDrivers,
 };

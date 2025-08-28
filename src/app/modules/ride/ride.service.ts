@@ -56,6 +56,37 @@ const findNearbyRides = async (userId: string) => {
   return nearbyRides;
 };
 
+const acceptsRequest = async (driverId: string, rideId: string) => {
+  const driver = await User.findById(driverId);
+  if (!driver) {
+    throw new AppError(httpStatus.NOT_FOUND, "Driver not found.");
+  }
+  const rideInfo = await Ride.findById(rideId);
+  //   const activeRide = await Ride.findOne({
+  //   rider: payload.rider,
+  //   status: {
+  //     $in: [
+  //       RideStatus.requested,
+  //       RideStatus.accepted,
+  //       RideStatus.picked_up,
+  //       RideStatus.in_transit,
+  //     ],
+  //   },
+  // });
+  if (!rideInfo) {
+    throw new AppError(httpStatus.NOT_FOUND, "Ride not found.");
+  }
+  if (rideInfo.status !== RideStatus.requested) {
+    throw new AppError(httpStatus.NOT_FOUND, "Accept only request rides.");
+  }
+  const updateObject = { driver: driverId, status: RideStatus.accepted };
+  const updateStatus = await Ride.findByIdAndUpdate(rideId, updateObject, {
+    new: true,
+    runValidators: true,
+  });
+  return updateStatus;
+};
+
 //TODO future, when create notification system
 const findNearbyDrivers = async (rideId: string) => {
   const isRide = await Ride.findById(rideId);
@@ -93,5 +124,8 @@ const findNearbyDrivers = async (rideId: string) => {
 export const RideService = {
   createRequest,
   findNearbyRides,
+  acceptsRequest,
+
+  // TODO future
   findNearbyDrivers,
 };
