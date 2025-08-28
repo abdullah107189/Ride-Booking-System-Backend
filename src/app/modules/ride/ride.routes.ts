@@ -12,5 +12,9 @@ router.post(
   validateRequest(rideZodSchema),
   RideController.createRequest
 );
-router.get("/findNearbyDrivers/:rideId", RideController.findNearbyDrivers);
+router.get(
+  "/findNearbyDrivers/:rideId",
+  checkAuth(ROLE.rider),
+  RideController.findNearbyDrivers
+);
 export const RiderRoutes = router;
