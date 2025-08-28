@@ -4,6 +4,7 @@ import bcryptjs from "bcryptjs";
 import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/AppError";
 import httpStatus from "http-status-codes";
+import { createNewAccessTokenWithRefreshToken } from "../../utils/userTokens";
 const createUser = async (payload: IUser) => {
   const { password, ...rest } = payload;
   const hashedPassword = await bcryptjs.hash(
@@ -33,7 +34,17 @@ const loginUser = async (payload: IUser) => {
   return result;
 };
 
+const getNewAccessToken = async (refreshToken: string) => {
+  const newAccessToken = await createNewAccessTokenWithRefreshToken(
+    refreshToken
+  );
+  return {
+    accessToken: newAccessToken,
+  };
+};
+
 export const AuthServices = {
   createUser,
   loginUser,
+  getNewAccessToken
 };

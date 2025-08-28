@@ -23,7 +23,6 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
 const loginUser = catchAsync(async (req: Request, res: Response) => {
   const user = await AuthServices.loginUser(req.body);
   const userToken = createTokens(user);
@@ -36,7 +35,42 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getNewAccessToken = catchAsync(async (req: Request, res: Response) => {
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) {
+    throw new AppError(httpStatus.BAD_REQUEST, "No Refresh Token Provided!");
+  }
+  const tokenInfo = await AuthServices.getNewAccessToken(refreshToken);
+  setAuthCookie(res, tokenInfo);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    data: tokenInfo,
+    message: "New Access Token Get Successfully",
+  });
+});
+
+const userLogout = catchAsync(async (req: Request, res: Response) => {
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "User Logged Out Successfully",
+    data: null,
+  });
+});
 export const AuthControllers = {
   createUser,
   loginUser,
+  getNewAccessToken,
+  userLogout,
 };
