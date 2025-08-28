@@ -11,10 +11,10 @@ const UserSchema = new Schema<IUser>(
     phone: { type: String, required: true },
     role: { type: String, enum: Object.values(ROLE), required: true },
     isBlocked: { type: Boolean, default: false },
+    isOnline: { type: Boolean, default: true },
 
     // Driver specific fields
     isApproved: { type: Boolean, default: false },
-    isOnline: { type: Boolean, default: false },
     vehicleInfo: { type: vehicleInfoSchema },
     currentLocation: {
       location: geoJsonPointSchema,
@@ -23,7 +23,7 @@ const UserSchema = new Schema<IUser>(
         required: true,
       },
     },
-    totalEarnings: { type: Number, default: 0},
+    totalEarnings: { type: Number, default: 0 },
     earnings: [earningSchema],
     rating: { type: Number, default: 0, min: 0, max: 5 },
     totalRides: { type: Number, default: 0 },
@@ -39,7 +39,6 @@ UserSchema.pre("save", function (next) {
     }
   } else {
     this.isApproved = undefined;
-    this.isOnline = undefined;
     this.vehicleInfo = undefined;
     this.currentLocation = undefined;
     this.totalEarnings = undefined;

@@ -33,11 +33,7 @@ const updateOwnProfile = async (
   if (!isExist) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found.");
   }
-
-  // ✅ অ্যাডমিন-এর জন্য সীমাবদ্ধ ফিল্ড
   const adminOnlyFields = ["isBlocked", "isApproved", "role"];
-
-  // ✅ সিস্টেম দ্বারা স্বয়ংক্রিয়ভাবে আপডেটেড ফিল্ড
   const systemOnlyFields = [
     "earnings",
     "totalRides",
@@ -46,17 +42,13 @@ const updateOwnProfile = async (
     "createdAt",
     "updatedAt",
   ];
-
   for (const field of Object.keys(payload)) {
-    // যদি কোনো ব্যবহারকারী সিস্টেম-জেনারেটেড ফিল্ড পরিবর্তন করতে চায়, তাহলে ত্রুটি দাও
     if (systemOnlyFields.includes(field)) {
       throw new AppError(
         httpStatus.FORBIDDEN,
         `The field '${field}' is automatically managed and cannot be updated.`
       );
     }
-
-    // যদি কোনো রাইডার বা ড্রাইভার অ্যাডমিন-নির্দিষ্ট ফিল্ড পরিবর্তন করতে চায়, তাহলে ত্রুটি দাও
     if (adminOnlyFields.includes(field)) {
       if (
         decodedToken.role === ROLE.driver ||
@@ -70,7 +62,6 @@ const updateOwnProfile = async (
     }
   }
 
-  // পাসওয়ার্ড আপডেটের লজিক
   if (payload.password) {
     payload.password = await bcryptjs.hash(
       payload.password,
@@ -90,8 +81,21 @@ const updateOwnProfile = async (
   const { password, ...result } = newUpdateUser.toObject();
   return result;
 };
+const changeOnlineStatus = async (userId: string) => {
+  const driver = await User.findById(userId);
+  if (!driver) {
+    throw new AppError(httpStatus.NOT_FOUND, "Driver not found.");
+  }
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { isOnline: true },
+    { new: true, runValidators: true }
+  ).select("name email isOnline isApproved");
+  return updatedUser;
+};
 
 export const userService = {
   findMe,
   updateOwnProfile,
+  changeOnlineStatus,
 };

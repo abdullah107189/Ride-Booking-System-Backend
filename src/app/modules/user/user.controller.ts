@@ -27,11 +27,21 @@ const updateOwnProfile = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     data: riderInfo,
-    message: "Updated successful",
+    message: "Profile updated successful",
   });
 });
 
+const changeOnlineStatus = catchAsync(async (req: Request, res: Response) => {
+  const user = await userService.changeOnlineStatus(req.user.userId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    data: user,
+    message: "Online status updated successfully",
+  });
+});
 export const userController = {
   findMe,
   updateOwnProfile,
+  changeOnlineStatus,
 };

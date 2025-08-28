@@ -1,3 +1,4 @@
+import { success } from "zod";
 import AppError from "../../errorHelpers/AppError";
 import { Ride } from "../ride/ride.model";
 import User from "../user/user.model";
@@ -32,7 +33,20 @@ const findNearbyRides = async (userId: string) => {
 
   return nearbyRides;
 };
+const changeOnlineStatus = async (userId: string) => {
+  const driver = await User.findById(userId);
+  if (!driver) {
+    throw new AppError(httpStatus.NOT_FOUND, "Driver not found.");
+  }
+  await User.findByIdAndUpdate(
+    userId,
+    { isOnline: true },
+    { new: true, runValidators: true }
+  );
+  return { success: true };
+};
 
 export const DriverService = {
   findNearbyRides,
+  changeOnlineStatus,
 };

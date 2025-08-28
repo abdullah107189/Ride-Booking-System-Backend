@@ -16,9 +16,9 @@ export interface IUser {
   phone: string;
   role: ROLE;
   isBlocked: boolean;
+  isOnline: boolean;
   // if driver
   isApproved?: boolean;
-  isOnline?: boolean;
   vehicleInfo?: IVehicleInfo;
   currentLocation?: ILocation; // [longitude, latitude]
   totalEarnings?: number;

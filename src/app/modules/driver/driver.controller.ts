@@ -13,6 +13,8 @@ const showRideRequests = catchAsync(async (req: Request, res: Response) => {
     message: "User created successfully",
   });
 });
+
+
 export const DriverController = {
   showRideRequests,
 };

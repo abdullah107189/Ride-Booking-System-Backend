@@ -13,4 +13,10 @@ router.patch(
   checkAuth(...Object.values(ROLE)),
   userController.updateOwnProfile
 );
+router.patch(
+  "/changeOnlineStatus",
+  checkAuth(...Object.values(ROLE)),
+  userController.changeOnlineStatus
+);
+
 export const UserRoutes = router;
