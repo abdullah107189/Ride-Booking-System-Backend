@@ -6,14 +6,25 @@ import { adminServices } from "./admin.services";
 
 const changeBlockStatus = catchAsync(async (req: Request, res: Response) => {
   const userId = req.params.id;
-  const riderInfo = await adminServices.changeBlockStatus(userId);
+  const result = await adminServices.changeBlockStatus(userId);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
-    data: riderInfo,
-    message: "Single data get successful",
+    data: result,
+    message: "Change block status",
+  });
+});
+const changeApproveStatus = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.params.id;
+  const result = await adminServices.changeApproveStatus(userId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    data: result,
+    message: "Change approved status",
   });
 });
 export const adminController = {
   changeBlockStatus,
+  changeApproveStatus,
 };

@@ -9,5 +9,10 @@ router.patch(
   checkAuth(ROLE.admin),
   adminController.changeBlockStatus
 );
+router.patch(
+  "/changeApproveStatus/:id",
+  checkAuth(ROLE.admin),
+  adminController.changeApproveStatus
+);
 
 export const AdminRoutes = router;
