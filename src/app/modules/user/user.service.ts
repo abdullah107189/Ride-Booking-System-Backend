@@ -1,10 +1,11 @@
 import User from "./user.model";
 import AppError from "../../errorHelpers/AppError";
+import { IUser, ROLE } from "./user.interface";
 import bcryptjs from "bcryptjs";
 import httpStatus from "http-status-codes";
-import { IUser, ROLE } from "./user.interface";
 import { JwtPayload } from "jsonwebtoken";
 import { envVars } from "../../config/env";
+
 const findMe = async (userId: string) => {
   const user = await User.findById(userId);
   if (!user) {
@@ -13,7 +14,6 @@ const findMe = async (userId: string) => {
   const { password: pass, ...result } = user.toObject();
   if (result && result.role === ROLE.rider) {
     delete result.isApproved;
-    delete result.isOnline;
     delete result.totalEarnings;
     delete result.rating;
     delete result.totalRides;
@@ -22,6 +22,7 @@ const findMe = async (userId: string) => {
   }
   return result;
 };
+
 const updateOwnProfile = async (
   userId: string,
   payload: Partial<IUser>,
@@ -81,6 +82,7 @@ const updateOwnProfile = async (
   const { password, ...result } = newUpdateUser.toObject();
   return result;
 };
+
 const changeOnlineStatus = async (userId: string) => {
   const driver = await User.findById(userId);
   if (!driver) {
@@ -88,9 +90,9 @@ const changeOnlineStatus = async (userId: string) => {
   }
   const updatedUser = await User.findByIdAndUpdate(
     userId,
-    { isOnline: true },
+    { isOnline: !driver?.isOnline },
     { new: true, runValidators: true }
-  ).select("name email isOnline isApproved");
+  ).select("name email isOnline");
   return updatedUser;
 };
 
