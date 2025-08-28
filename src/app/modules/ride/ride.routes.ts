@@ -13,6 +13,12 @@ router.post(
   RideController.createRequest
 );
 router.get(
+  "/available",
+  checkAuth(ROLE.driver),
+  RideController.findNearbyRides
+);
+
+router.get(
   "/findNearbyDrivers/:rideId",
   checkAuth(ROLE.rider),
   RideController.findNearbyDrivers

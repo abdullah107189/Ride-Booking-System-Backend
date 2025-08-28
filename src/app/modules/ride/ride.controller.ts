@@ -30,8 +30,19 @@ const findNearbyDrivers = catchAsync(async (req: Request, res: Response) => {
     message: "Filter nearby drivers get successful",
   });
 });
+const findNearbyRides = catchAsync(async (req: Request, res: Response) => {
+  const driverId = req.user.userId;
+  const availableRides = await RideService.findNearbyRides(driverId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    data: availableRides,
+    message: "Filter nearby drivers get successful",
+  });
+});
 
 export const RideController = {
   createRequest,
+  findNearbyRides,
   findNearbyDrivers,
 };

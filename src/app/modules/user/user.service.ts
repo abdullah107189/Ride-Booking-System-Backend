@@ -84,13 +84,13 @@ const updateOwnProfile = async (
 };
 
 const changeOnlineStatus = async (userId: string) => {
-  const driver = await User.findById(userId);
-  if (!driver) {
-    throw new AppError(httpStatus.NOT_FOUND, "Driver not found.");
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found.");
   }
   const updatedUser = await User.findByIdAndUpdate(
     userId,
-    { isOnline: !driver?.isOnline },
+    { isOnline: !user?.isOnline },
     { new: true, runValidators: true }
   ).select("name email isOnline");
   return updatedUser;
