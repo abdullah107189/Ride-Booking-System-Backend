@@ -91,7 +91,7 @@ export const RideController = {
   createRequest,
   findNearbyRides,
 
-  // status change 
+  // status change
   acceptsRequest,
   picked_upRequest,
   in_transitRequest,

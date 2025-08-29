@@ -26,17 +26,17 @@ router.patch(
 router.patch(
   "/picked_up/:rideId",
   checkAuth(ROLE.driver),
-  RideController.acceptsRequest
+  RideController.picked_upRequest
 );
 router.patch(
   "/in_transit/:rideId",
   checkAuth(ROLE.driver),
-  RideController.acceptsRequest
+  RideController.in_transitRequest
 );
 router.patch(
   "/completed/:rideId",
   checkAuth(ROLE.driver),
-  RideController.acceptsRequest
+  RideController.completedRequest
 );
 router.get(
   "/findNearbyDrivers/:rideId",
