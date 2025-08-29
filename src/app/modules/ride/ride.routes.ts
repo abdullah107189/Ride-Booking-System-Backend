@@ -12,12 +12,20 @@ router.post(
   validateRequest(rideZodSchema),
   RideController.createRequest
 );
+// rider status change
+router.patch(
+  "/cancel/:rideId",
+  checkAuth(ROLE.rider),
+  RideController.cancelRequest
+);
+
 router.get(
   "/available",
   checkAuth(ROLE.driver),
   RideController.findNearbyRides
 );
-// status change
+
+// driver status change
 router.patch(
   "/accept/:rideId",
   checkAuth(ROLE.driver),

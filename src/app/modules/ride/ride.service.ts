@@ -1,4 +1,5 @@
 import AppError from "../../errorHelpers/AppError";
+import { ROLE } from "../user/user.interface";
 import User from "../user/user.model";
 import { IRide, RideStatus } from "./ride.interface";
 import { Ride } from "./ride.model";
@@ -56,6 +57,46 @@ const findNearbyRides = async (userId: string) => {
   return nearbyRides;
 };
 
+const cancelRequest = async (riderId: string, rideId: string) => {
+  const rider = await User.findById(riderId);
+  if (!rider) {
+    throw new AppError(httpStatus.NOT_FOUND, "Rider not found.");
+  }
+  const rideInfo = await Ride.findById(rideId);
+  if (!rideInfo) {
+    throw new AppError(httpStatus.NOT_FOUND, "Ride not found.");
+  }
+  if (rideInfo.status == RideStatus.requested) {
+    if (rider.role !== ROLE.rider || rider.isBlocked) {
+      throw new AppError(httpStatus.FORBIDDEN, "Rider not authorized");
+    }
+    const updateObject = {
+      status: RideStatus.canceled,
+    };
+    const pushUpdateStatus = {
+      statusHistory: {
+        updateStatus: RideStatus.canceled,
+        timestamp: new Date(),
+      },
+    };
+    const updateStatus = await Ride.findByIdAndUpdate(
+      rideId,
+      {
+        $set: updateObject,
+        $push: pushUpdateStatus,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    return updateStatus;
+  } else {
+    throw new AppError(httpStatus.NOT_FOUND, "allow only request rides.");
+  }
+};
+
+// driver control
 const acceptsRequest = async (driverId: string, rideId: string) => {
   const driver = await User.findById(driverId);
   if (!driver) {
@@ -247,6 +288,7 @@ export const RideService = {
   findNearbyRides,
 
   // status change
+  cancelRequest,
   acceptsRequest,
   picked_upRequest,
   in_transitRequest,

@@ -32,6 +32,20 @@ const findNearbyRides = catchAsync(async (req: Request, res: Response) => {
     message: "Filter nearby drivers get successful",
   });
 });
+
+// rider status
+const cancelRequest = catchAsync(async (req: Request, res: Response) => {
+  const riderId = req.user.userId;
+  const rideId = req.params.rideId;
+  const availableRides = await RideService.cancelRequest(riderId, rideId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    data: availableRides,
+    message: "Ride request accepted successful",
+  });
+});
+// driver status
 const acceptsRequest = catchAsync(async (req: Request, res: Response) => {
   const driverId = req.user.userId;
   const rideId = req.params.rideId;
@@ -92,6 +106,7 @@ export const RideController = {
   findNearbyRides,
 
   // status change
+  cancelRequest,
   acceptsRequest,
   picked_upRequest,
   in_transitRequest,
