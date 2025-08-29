@@ -17,9 +17,24 @@ router.get(
   checkAuth(ROLE.driver),
   RideController.findNearbyRides
 );
-
+// status change
 router.patch(
   "/accept/:rideId",
+  checkAuth(ROLE.driver),
+  RideController.acceptsRequest
+);
+router.patch(
+  "/picked_up/:rideId",
+  checkAuth(ROLE.driver),
+  RideController.acceptsRequest
+);
+router.patch(
+  "/in_transit/:rideId",
+  checkAuth(ROLE.driver),
+  RideController.acceptsRequest
+);
+router.patch(
+  "/completed/:rideId",
   checkAuth(ROLE.driver),
   RideController.acceptsRequest
 );

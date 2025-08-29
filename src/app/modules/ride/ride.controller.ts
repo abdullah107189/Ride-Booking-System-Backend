@@ -43,6 +43,39 @@ const acceptsRequest = catchAsync(async (req: Request, res: Response) => {
     message: "Ride request accepted successful",
   });
 });
+const picked_upRequest = catchAsync(async (req: Request, res: Response) => {
+  const driverId = req.user.userId;
+  const rideId = req.params.rideId;
+  const availableRides = await RideService.picked_upRequest(driverId, rideId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    data: availableRides,
+    message: "Ride request accepted successful",
+  });
+});
+const in_transitRequest = catchAsync(async (req: Request, res: Response) => {
+  const driverId = req.user.userId;
+  const rideId = req.params.rideId;
+  const availableRides = await RideService.in_transitRequest(driverId, rideId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    data: availableRides,
+    message: "Ride request accepted successful",
+  });
+});
+const completedRequest = catchAsync(async (req: Request, res: Response) => {
+  const driverId = req.user.userId;
+  const rideId = req.params.rideId;
+  const availableRides = await RideService.completedRequest(driverId, rideId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    data: availableRides,
+    message: "Ride request accepted successful",
+  });
+});
 
 const findNearbyDrivers = catchAsync(async (req: Request, res: Response) => {
   const riderInfo = await RideService.findNearbyDrivers(req.params.rideId);
@@ -57,7 +90,12 @@ const findNearbyDrivers = catchAsync(async (req: Request, res: Response) => {
 export const RideController = {
   createRequest,
   findNearbyRides,
+
+  // status change 
   acceptsRequest,
+  picked_upRequest,
+  in_transitRequest,
+  completedRequest,
 
   // TODO future
   findNearbyDrivers,
