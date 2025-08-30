@@ -18,7 +18,7 @@ const createRequest = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     data: riderInfo,
-    message: "Ride created successfully",
+    message: "Ride created successful",
   });
 });
 
@@ -32,6 +32,7 @@ const findNearbyRides = catchAsync(async (req: Request, res: Response) => {
     message: "Filter nearby drivers get successful",
   });
 });
+
 const getAllHistory = catchAsync(async (req: Request, res: Response) => {
   const riderId = req.user.userId;
   const rides = await RideService.getAllHistory(riderId);
@@ -39,7 +40,7 @@ const getAllHistory = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     data: rides,
-    message: "Get all rides successfully",
+    message: "Get all rides successful",
   });
 });
 
@@ -52,7 +53,7 @@ const cancelRequest = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     data: availableRides,
-    message: "Ride request accepted successful",
+    message: "Ride request cancel successful",
   });
 });
 // driver status
@@ -75,7 +76,7 @@ const picked_upRequest = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     data: availableRides,
-    message: "Ride request accepted successful",
+    message: "Ride request picked up successful",
   });
 });
 const in_transitRequest = catchAsync(async (req: Request, res: Response) => {
@@ -86,7 +87,7 @@ const in_transitRequest = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     data: availableRides,
-    message: "Ride request accepted successful",
+    message: "Ride request in transit successful",
   });
 });
 const completedRequest = catchAsync(async (req: Request, res: Response) => {
@@ -97,7 +98,7 @@ const completedRequest = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     data: availableRides,
-    message: "Ride request accepted successful",
+    message: "Ride request completed successful",
   });
 });
 const paidRequest = catchAsync(async (req: Request, res: Response) => {
@@ -108,7 +109,7 @@ const paidRequest = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     data: availableRides,
-    message: "Ride request accepted successful",
+    message: "Ride request paid successful",
   });
 });
 

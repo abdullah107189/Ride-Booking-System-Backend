@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { ROLE } from "../user/user.interface";
-import { adminController } from "./admin.controllers";
+import { adminController } from "./admin.controller";
 
 const router = Router();
-router.get("/getAllUser", adminController.getAllUser);
-router.get("/getAllRide", adminController.getAllRide);
+router.get("/getAllUser", checkAuth(ROLE.admin), adminController.getAllUser);
+router.get("/getAllRide", checkAuth(ROLE.admin), adminController.getAllRide);
 router.patch(
   "/changeBlockStatus/:id",
   checkAuth(ROLE.admin),

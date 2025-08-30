@@ -10,7 +10,7 @@ const showRideRequests = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     data: user,
-    message: "User created successfully",
+    message: "All Requested ride show successful",
   });
 });
 
@@ -22,7 +22,7 @@ const getDriverEarningsHistory = catchAsync(
       success: true,
       statusCode: httpStatus.CREATED,
       data: rides,
-      message: "Earnings history retrieved successfully",
+      message: "Earnings history retrieved successful",
     });
   }
 );

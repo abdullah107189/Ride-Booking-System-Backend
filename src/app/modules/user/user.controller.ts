@@ -37,7 +37,7 @@ const changeOnlineStatus = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     data: user,
-    message: "Online status updated successfully",
+    message: "Online status updated successful",
   });
 });
 export const userController = {

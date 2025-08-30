@@ -19,7 +19,7 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     data: user,
-    message: "User created successfully",
+    message: "User created successful",
   });
 });
 
@@ -31,7 +31,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     data: user,
-    message: "User logged In successfully",
+    message: "User logged In successful",
   });
 });
 
@@ -46,7 +46,7 @@ const getNewAccessToken = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     data: tokenInfo,
-    message: "New Access Token Get Successfully",
+    message: "New access token get successful",
   });
 });
 
@@ -64,11 +64,11 @@ const userLogout = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
-    message: "User Logged Out Successfully",
+    message: "User Logged Out Successful",
     data: null,
   });
 });
-export const AuthControllers = {
+export const AuthController = {
   createUser,
   loginUser,
   getNewAccessToken,

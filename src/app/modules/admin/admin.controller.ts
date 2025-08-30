@@ -11,7 +11,7 @@ const changeBlockStatus = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     data: result,
-    message: "Change block status",
+    message: "Changed block status",
   });
 });
 const changeApproveStatus = catchAsync(async (req: Request, res: Response) => {
@@ -21,7 +21,7 @@ const changeApproveStatus = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     data: result,
-    message: "Change approved status",
+    message: "Changed approved status",
   });
 });
 const getAllUser = catchAsync(async (req: Request, res: Response) => {

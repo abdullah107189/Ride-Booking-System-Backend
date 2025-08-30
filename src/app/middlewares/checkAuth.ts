@@ -5,7 +5,6 @@ import { verifyToken } from "../utils/jwt";
 import { JwtPayload } from "jsonwebtoken";
 import httpStatus from "http-status-codes";
 import User from "../modules/user/user.model";
-import { ROLE } from "../modules/user/user.interface";
 export const checkAuth =
   (...authRoles: string[]) =>
   async (req: Request, res: Response, next: NextFunction) => {
