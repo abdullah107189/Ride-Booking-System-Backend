@@ -38,7 +38,18 @@ const changeApproveStatus = async (userId: string) => {
 
   return updatedUser;
 };
+const getAllUser = async () => {
+  const users = await User.find({});
+  if (!users) {
+    throw new AppError(httpStatus.NOT_FOUND, "Not any rider or driver");
+  }
+  const totalCountDriver = await User.countDocuments({ role: ROLE.driver });
+  const totalCountRider = await User.countDocuments({ role: ROLE.rider });
+
+  return { users: users, meta: { totalCountDriver, totalCountRider } };
+};
 export const adminServices = {
   changeBlockStatus,
   changeApproveStatus,
+  getAllUser,
 };

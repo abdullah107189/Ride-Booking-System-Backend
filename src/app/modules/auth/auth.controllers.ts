@@ -31,7 +31,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     data: user,
-    message: "User created successfully",
+    message: "User logged In successfully",
   });
 });
 

@@ -24,7 +24,17 @@ const changeApproveStatus = catchAsync(async (req: Request, res: Response) => {
     message: "Change approved status",
   });
 });
+const getAllUser = catchAsync(async (req: Request, res: Response) => {
+  const result = await adminServices.getAllUser();
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    data: result,
+    message: "Get All rider or driver",
+  });
+});
 export const adminController = {
   changeBlockStatus,
   changeApproveStatus,
+  getAllUser,
 };

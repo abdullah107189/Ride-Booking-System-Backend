@@ -9,6 +9,7 @@ router.patch(
   checkAuth(ROLE.admin),
   adminController.changeBlockStatus
 );
+router.get('/getAllUser', adminController.getAllUser)
 router.patch(
   "/changeApproveStatus/:id",
   checkAuth(ROLE.admin),
