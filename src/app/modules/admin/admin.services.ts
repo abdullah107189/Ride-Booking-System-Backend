@@ -13,6 +13,9 @@ const changeBlockStatus = async (userId: string) => {
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "Not Found");
   }
+  if (user.role == ROLE.admin) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Can't block admin");
+  }
   const updatedUser = await User.findByIdAndUpdate(
     userId,
     { isBlocked: !user?.isBlocked },

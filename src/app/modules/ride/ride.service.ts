@@ -59,7 +59,6 @@ const findNearbyRides = async (userId: string) => {
 };
 
 const getAllHistory = async (riderId: string) => {
-  console.log(riderId);
   const isRide = await Ride.find({ rider: riderId });
   if (!isRide) {
     throw new AppError(httpStatus.NOT_FOUND, "Ride not found !");

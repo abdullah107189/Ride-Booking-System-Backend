@@ -28,7 +28,7 @@ export const checkAuth =
         throw new AppError(httpStatus.BAD_REQUEST, "Email don't exists.");
       }
       if (existingUser.isBlocked) {
-        throw new AppError(httpStatus.BAD_REQUEST, "User is Blocked");
+        throw new AppError(httpStatus.BAD_REQUEST, "You are Blocked");
       }
 
       if (!authRoles.includes(verifiedToken.role)) {

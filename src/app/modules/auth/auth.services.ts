@@ -7,6 +7,9 @@ import httpStatus from "http-status-codes";
 import { createNewAccessTokenWithRefreshToken } from "../../utils/userTokens";
 const createUser = async (payload: IUser) => {
   const { password, ...rest } = payload;
+  if (payload.role === ROLE.admin) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Admin role not allow");
+  }
   const hashedPassword = await bcryptjs.hash(
     password as string,
     Number(envVars.bcrypt_salt_round)
