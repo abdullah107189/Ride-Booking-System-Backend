@@ -33,8 +33,18 @@ const getAllUser = catchAsync(async (req: Request, res: Response) => {
     message: "Get All rider or driver",
   });
 });
+const getAllRide = catchAsync(async (req: Request, res: Response) => {
+  const result = await adminServices.getAllRide();
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    data: result,
+    message: "All ride get successful",
+  });
+});
 export const adminController = {
   changeBlockStatus,
   changeApproveStatus,
   getAllUser,
+  getAllRide,
 };
