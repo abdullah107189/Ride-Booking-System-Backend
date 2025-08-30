@@ -34,13 +34,12 @@ const findNearbyRides = catchAsync(async (req: Request, res: Response) => {
 });
 const getAllHistory = catchAsync(async (req: Request, res: Response) => {
   const riderId = req.user.userId;
-  const riderInfo = await RideService.getAllHistory(riderId);
-
+  const rides = await RideService.getAllHistory(riderId);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
-    data: riderInfo,
-    message: "Driver created successfully",
+    data: rides,
+    message: "Get all rides successfully",
   });
 });
 

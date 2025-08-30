@@ -16,7 +16,7 @@ const moduleRoutes = [
     route: AuthRoutes,
   },
   {
-    path: "/driver",
+    path: "/drivers",
     route: DriverRoutes,
   },
   {

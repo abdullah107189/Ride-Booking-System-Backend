@@ -6,6 +6,7 @@ export enum RideStatus {
   in_transit = "in_transit",
   completed = "completed",
   canceled = "canceled",
+  payment = "payment",
 }
 export interface IGeoJSONPoint extends Document {
   type: "Point";

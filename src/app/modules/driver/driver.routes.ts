@@ -1,8 +1,12 @@
 import { Router } from "express";
-import { DriverController } from "./driver.controller";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { ROLE } from "../user/user.interface";
+import { DriverController } from "./driver.controllers";
 const router = Router();
 
-
+router.get(
+  "/earnings",
+  checkAuth(ROLE.driver),
+  DriverController.getDriverEarnings
+);
 export const DriverRoutes = router;

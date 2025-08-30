@@ -63,9 +63,9 @@ const getAllHistory = async (riderId: string) => {
   if (!isRide) {
     throw new AppError(httpStatus.NOT_FOUND, "Ride not found !");
   }
-  console.log(isRide);
+  return isRide;
+  
 };
-
 const cancelRequest = async (riderId: string, rideId: string) => {
   const rider = await User.findById(riderId);
   if (!rider) {
