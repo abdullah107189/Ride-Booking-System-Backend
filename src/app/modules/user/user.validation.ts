@@ -107,8 +107,8 @@ export const updateUserZodSchema = z.object({
   isOnline: z.boolean().optional(),
   totalEarnings: z.number().optional(),
   earnings: z.array(earningZodSchema).optional(),
-  rating: z.number().min(0).max(5).default(0).optional(),
-  totalRides: z.number().default(0).optional(),
+  rating: z.number().min(0).max(5).optional(),
+  totalRides: z.number().optional(),
   vehicleInfo: vehicleInfoZodSchema.optional(),
   currentLocation: currentLocationZodSchema.optional(),
 });

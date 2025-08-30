@@ -28,9 +28,7 @@ const updateOwnProfile = async (
   payload: Partial<IUser>,
   decodedToken: JwtPayload
 ) => {
-  console.log(payload);
   const isExist = await User.findById(userId);
-
   if (!isExist) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found.");
   }
@@ -43,6 +41,7 @@ const updateOwnProfile = async (
     "createdAt",
     "updatedAt",
   ];
+  
   for (const field of Object.keys(payload)) {
     if (systemOnlyFields.includes(field)) {
       throw new AppError(

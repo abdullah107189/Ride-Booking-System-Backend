@@ -1,4 +1,4 @@
-import { IUser } from "../user/user.interface";
+import { IUser, ROLE } from "../user/user.interface";
 import User from "../user/user.model";
 import bcryptjs from "bcryptjs";
 import { envVars } from "../../config/env";
@@ -16,6 +16,7 @@ const createUser = async (payload: IUser) => {
     password: hashedPassword,
     ...rest,
   });
+
   const { password: pass, ...result } = user.toObject();
   return result;
 };
@@ -26,10 +27,15 @@ const loginUser = async (payload: IUser) => {
   if (!isUser) {
     throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
   }
-  const comparePassword = await bcryptjs.compare(
-    password,
-    isUser.password as string
-  );
+  await bcryptjs.compare(password, isUser.password as string);
+  if (isUser && isUser.role === ROLE.rider) {
+    delete isUser.isApproved;
+    delete isUser.totalEarnings;
+    delete isUser.rating;
+    delete isUser.totalRides;
+    delete isUser.earnings;
+    return isUser;
+  }
   const { password: pass, ...result } = isUser.toObject();
   return result;
 };
