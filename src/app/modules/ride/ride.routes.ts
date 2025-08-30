@@ -13,6 +13,7 @@ router.post(
   RideController.createRequest
 );
 // rider status change
+router.get("/history", checkAuth(ROLE.rider),RideController.getAllHistory);
 router.patch(
   "/cancel/:rideId",
   checkAuth(ROLE.rider),

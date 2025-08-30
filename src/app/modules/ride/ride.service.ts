@@ -57,6 +57,15 @@ const findNearbyRides = async (userId: string) => {
   return nearbyRides;
 };
 
+const getAllHistory = async (riderId: string) => {
+  console.log(riderId);
+  const isRide = await Ride.find({ rider: riderId });
+  if (!isRide) {
+    throw new AppError(httpStatus.NOT_FOUND, "Ride not found !");
+  }
+  console.log(isRide);
+};
+
 const cancelRequest = async (riderId: string, rideId: string) => {
   const rider = await User.findById(riderId);
   if (!rider) {
@@ -286,7 +295,7 @@ const findNearbyDrivers = async (rideId: string) => {
 export const RideService = {
   createRequest,
   findNearbyRides,
-
+  getAllHistory,
   // status change
   cancelRequest,
   acceptsRequest,

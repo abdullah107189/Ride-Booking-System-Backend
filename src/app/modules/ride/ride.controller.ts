@@ -18,7 +18,7 @@ const createRequest = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     data: riderInfo,
-    message: "Driver created successfully",
+    message: "Ride created successfully",
   });
 });
 
@@ -30,6 +30,17 @@ const findNearbyRides = catchAsync(async (req: Request, res: Response) => {
     statusCode: httpStatus.CREATED,
     data: availableRides,
     message: "Filter nearby drivers get successful",
+  });
+});
+const getAllHistory = catchAsync(async (req: Request, res: Response) => {
+  const riderId = req.user.userId;
+  const riderInfo = await RideService.getAllHistory(riderId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    data: riderInfo,
+    message: "Driver created successfully",
   });
 });
 
@@ -104,7 +115,7 @@ const findNearbyDrivers = catchAsync(async (req: Request, res: Response) => {
 export const RideController = {
   createRequest,
   findNearbyRides,
-
+  getAllHistory,
   // status change
   cancelRequest,
   acceptsRequest,
