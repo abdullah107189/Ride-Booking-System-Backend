@@ -3,6 +3,7 @@ import AppError from "../../errorHelpers/AppError";
 import User from "../user/user.model";
 import { ROLE } from "../user/user.interface";
 import { Ride } from "../ride/ride.model";
+import { RideStatus } from "../ride/ride.interface";
 
 const changeBlockStatus = async (userId: string) => {
   if (!userId) {
@@ -58,9 +59,45 @@ const getAllRide = async () => {
 
   return { data: rides, meta: totalCount };
 };
+
+const cancelRide = async (rideId: string) => {
+  const rideInfo = await Ride.findById(rideId);
+  if (!rideInfo) {
+    throw new AppError(httpStatus.NOT_FOUND, "Ride not found.");
+  }
+  if (
+    rideInfo.status !== RideStatus.completed &&
+    rideInfo.status !== RideStatus.paid
+  ) {
+    const updateObject = {
+      status: RideStatus.canceled,
+    };
+    const pushUpdateStatus = {
+      statusHistory: {
+        updateStatus: RideStatus.canceled,
+        timestamp: new Date(),
+      },
+    };
+    const updateStatus = await Ride.findByIdAndUpdate(
+      rideId,
+      {
+        $set: updateObject,
+        $push: pushUpdateStatus,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    return updateStatus;
+  } else {
+    throw new AppError(httpStatus.BAD_REQUEST, "Already completed this ride");
+  }
+};
 export const adminServices = {
   changeBlockStatus,
   changeApproveStatus,
   getAllUser,
   getAllRide,
+  cancelRide,
 };

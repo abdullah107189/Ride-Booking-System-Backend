@@ -42,9 +42,20 @@ const getAllRide = catchAsync(async (req: Request, res: Response) => {
     message: "All ride get successful",
   });
 });
+const cancelRide = catchAsync(async (req: Request, res: Response) => {
+  const rideId = req.params.id;
+  const result = await adminServices.cancelRide(rideId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    data: result,
+    message: "Ride canceled by admin",
+  });
+});
 export const adminController = {
   changeBlockStatus,
   changeApproveStatus,
   getAllUser,
   getAllRide,
+  cancelRide,
 };

@@ -8,7 +8,7 @@ import { AdminRoutes } from "../modules/admin/admin.routes";
 export const router = Router();
 const moduleRoutes = [
   {
-    path: "/user",
+    path: "/users",
     route: UserRoutes,
   },
   {

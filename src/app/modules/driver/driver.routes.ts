@@ -7,6 +7,6 @@ const router = Router();
 router.get(
   "/earningHistory",
   checkAuth(ROLE.driver),
-  DriverController.getDriverEarnings
+  DriverController.getDriverEarningsHistory
 );
 export const DriverRoutes = router;

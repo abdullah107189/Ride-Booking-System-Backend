@@ -5,8 +5,8 @@ import { ROLE } from "./user.interface";
 import { validateRequest } from "../../middlewares/validationRequest";
 import { updateUserZodSchema } from "./user.validation";
 const router = Router();
-router.get("/me", checkAuth(ROLE.driver, ROLE.rider), userController.findMe);
 
+router.get("/me", checkAuth(...Object.values(ROLE)), userController.findMe);
 router.patch(
   "/updateOwnProfile",
   validateRequest(updateUserZodSchema),

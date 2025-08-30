@@ -6,13 +6,13 @@ import { checkAuth } from "../../middlewares/checkAuth";
 import { ROLE } from "../user/user.interface";
 
 const router = Router();
+// Rider Endpoints
 router.post(
   "/request",
   checkAuth(ROLE.rider),
   validateRequest(rideZodSchema),
   RideController.createRequest
 );
-// rider status change
 router.get("/history", checkAuth(ROLE.rider), RideController.getAllHistory);
 router.patch(
   "/:id/cancel",
@@ -20,6 +20,7 @@ router.patch(
   RideController.cancelRequest
 );
 
+// Driver Endpoints
 router.get(
   "/available",
   checkAuth(ROLE.driver),
@@ -38,7 +39,7 @@ router.patch(
   RideController.picked_upRequest
 );
 router.patch(
-  "/in_transit/:rideId",
+  "/:id/in_transit",
   checkAuth(ROLE.driver),
   RideController.in_transitRequest
 );
@@ -47,11 +48,9 @@ router.patch(
   checkAuth(ROLE.driver),
   RideController.completedRequest
 );
-router.patch(
-  "/:id/paid",
-  checkAuth(ROLE.driver),
-  RideController.paidRequest
-);
+router.patch("/:id/paid", checkAuth(ROLE.driver), RideController.paidRequest);
+
+// Bonus and TO DO future
 router.get(
   "/findNearbyDrivers/:rideId",
   checkAuth(ROLE.rider),

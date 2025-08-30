@@ -9,7 +9,7 @@ const findNearbyRides = async (driverId: string) => {
   return {};
 };
 
-const getDriverEarnings = async (driverId: string) => {
+const getDriverEarningsHistory = async (driverId: string) => {
   if (!mongoose.Types.ObjectId.isValid(driverId)) {
     throw new AppError(400, "Invalid driver ID.");
   }
@@ -41,4 +41,4 @@ const getDriverEarnings = async (driverId: string) => {
 
   return paidRideDetails;
 };
-export const DriverServices = { findNearbyRides, getDriverEarnings };
+export const DriverServices = { findNearbyRides, getDriverEarningsHistory };
