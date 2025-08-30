@@ -3,7 +3,6 @@ import AppError from "../../errorHelpers/AppError";
 import httpStatus from "http-status-codes";
 import { Ride } from "../ride/ride.model";
 import { calculateFare } from "../../utils/fareCalculator";
-import User from "../user/user.model";
 import { RideStatus } from "../ride/ride.interface";
 
 const findNearbyRides = async (driverId: string) => {
@@ -14,49 +13,32 @@ const getDriverEarnings = async (driverId: string) => {
   if (!mongoose.Types.ObjectId.isValid(driverId)) {
     throw new AppError(400, "Invalid driver ID.");
   }
-  const completedRides = await Ride.findOne({
+  const paidRides = await Ride.find({
     driver: driverId,
-    status: "completed",
+    status: RideStatus.paid,
   }).lean();
-  if (!completedRides) {
-    throw new AppError(httpStatus.NOT_FOUND, "Not available complete any ride");
+  if (!paidRides || paidRides.length === 0) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "No paid rides available for this driver."
+    );
   }
+
   let totalEarnings = 0;
+  const paidRideDetails = paidRides.map((ride) => {
+    const fare = calculateFare(
+      ride.pickupLocation.location.coordinates,
+      ride.destinationLocation.location.coordinates
+    );
 
-  const fare = calculateFare(
-    completedRides.pickupLocation.location.coordinates,
-    completedRides.destinationLocation.location.coordinates
-  );
+    totalEarnings += fare;
 
-  totalEarnings += fare; // total earn sum
-
-  await User.findByIdAndUpdate(driverId, {
-    $inc: { totalEarnings },
+    return {
+      rideId: ride._id,
+      income: fare,
+    };
   });
-  await Ride.findByIdAndUpdate(
-    completedRides._id,
-    {
-      $set: { status: RideStatus.payment },
-      $push: {
-        statusHistory: {
-          updateStatus: RideStatus.payment,
-          timestamp: new Date(),
-        },
-      },
-    },
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
 
-  const earningDetails = {
-    rideId: completedRides._id,
-    fare: fare,
-    rider: completedRides.rider,
-    pickupLocation: completedRides.pickupLocation,
-    destinationLocation: completedRides.destinationLocation,
-  };
-  return { totalEarnings, earningDetails };
+  return paidRideDetails;
 };
 export const DriverServices = { findNearbyRides, getDriverEarnings };

@@ -5,7 +5,7 @@ import { DriverController } from "./driver.controllers";
 const router = Router();
 
 router.get(
-  "/earnings",
+  "/earningHistory",
   checkAuth(ROLE.driver),
   DriverController.getDriverEarnings
 );
