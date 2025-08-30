@@ -1,4 +1,5 @@
 import AppError from "../../errorHelpers/AppError";
+import { calculateFare } from "../../utils/fareCalculator";
 import { ROLE } from "../user/user.interface";
 import User from "../user/user.model";
 import { IRide, RideStatus } from "./ride.interface";
@@ -64,7 +65,6 @@ const getAllHistory = async (riderId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, "Ride not found !");
   }
   return isRide;
-  
 };
 const cancelRequest = async (riderId: string, rideId: string) => {
   const rider = await User.findById(riderId);
@@ -258,6 +258,60 @@ const completedRequest = async (driverId: string, rideId: string) => {
   }
 };
 
+const paidRequest = async (driverId: string, rideId: string) => {
+  const driver = await User.findById(driverId);
+  if (!driver) {
+    throw new AppError(httpStatus.NOT_FOUND, "Driver not found.");
+  }
+  const rideInfo = await Ride.findById(rideId);
+  if (!rideInfo) {
+    throw new AppError(httpStatus.NOT_FOUND, "Ride not found.");
+  }
+  if (rideInfo.status == RideStatus.completed) {
+    if (driver.role !== "driver" || !driver.isApproved || !driver.isOnline) {
+      throw new AppError(httpStatus.FORBIDDEN, "Driver not authorized");
+    }
+    const updateObject = {
+      driver: driverId,
+      status: RideStatus.paid,
+    };
+    const pushUpdateStatus = {
+      statusHistory: {
+        updateStatus: RideStatus.paid,
+        timestamp: new Date(),
+      },
+    };
+
+    // increase total earning
+    let totalEarnings = 0;
+
+    const fare = calculateFare(
+      rideInfo.pickupLocation.location.coordinates,
+      rideInfo.destinationLocation.location.coordinates
+    );
+
+    totalEarnings += fare; // total earn sum
+
+    await User.findByIdAndUpdate(driverId, {
+      $inc: { totalEarnings },
+    });
+    const updateStatus = await Ride.findByIdAndUpdate(
+      rideId,
+      {
+        $set: updateObject,
+        $push: pushUpdateStatus,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    return updateStatus;
+  } else {
+    throw new AppError(httpStatus.NOT_FOUND, "allow only in_transit rides.");
+  }
+};
+
 //TODO future, when create notification system
 const findNearbyDrivers = async (rideId: string) => {
   const isRide = await Ride.findById(rideId);
@@ -302,6 +356,7 @@ export const RideService = {
   picked_upRequest,
   in_transitRequest,
   completedRequest,
+  paidRequest,
 
   // TODO future
   findNearbyDrivers,

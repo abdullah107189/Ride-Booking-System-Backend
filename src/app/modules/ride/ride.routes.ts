@@ -13,9 +13,9 @@ router.post(
   RideController.createRequest
 );
 // rider status change
-router.get("/history", checkAuth(ROLE.rider),RideController.getAllHistory);
+router.get("/history", checkAuth(ROLE.rider), RideController.getAllHistory);
 router.patch(
-  "/cancel/:rideId",
+  "/:id/cancel",
   checkAuth(ROLE.rider),
   RideController.cancelRequest
 );
@@ -28,12 +28,12 @@ router.get(
 
 // driver status change
 router.patch(
-  "/accept/:rideId",
+  "/:id/accept",
   checkAuth(ROLE.driver),
   RideController.acceptsRequest
 );
 router.patch(
-  "/picked_up/:rideId",
+  "/:id/picked_up",
   checkAuth(ROLE.driver),
   RideController.picked_upRequest
 );
@@ -43,9 +43,14 @@ router.patch(
   RideController.in_transitRequest
 );
 router.patch(
-  "/completed/:rideId",
+  "/:id/completed",
   checkAuth(ROLE.driver),
   RideController.completedRequest
+);
+router.patch(
+  "/:id/paid",
+  checkAuth(ROLE.driver),
+  RideController.paidRequest
 );
 router.get(
   "/findNearbyDrivers/:rideId",
