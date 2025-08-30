@@ -315,7 +315,7 @@ const paidRequest = async (driverId: string, rideId: string) => {
 //TODO future, when create notification system
 const findNearbyDrivers = async (rideId: string) => {
   const isRide = await Ride.findById(rideId);
-
+console.log(isRide);
   if (!isRide) {
     throw new AppError(httpStatus.NOT_FOUND, "Ride not found.");
   }

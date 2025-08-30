@@ -114,7 +114,7 @@ const paidRequest = catchAsync(async (req: Request, res: Response) => {
 });
 
 const findNearbyDrivers = catchAsync(async (req: Request, res: Response) => {
-  const riderInfo = await RideService.findNearbyDrivers(req.params.id);
+  const riderInfo = await RideService.findNearbyDrivers(req.params.rideId);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
