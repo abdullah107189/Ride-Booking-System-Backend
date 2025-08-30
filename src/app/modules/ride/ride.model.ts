@@ -61,5 +61,5 @@ const rideSchema = new Schema<IRide>(
   },
   { timestamps: true }
 );
-
+rideSchema.index({ "pickupLocation.location": "2dsphere" });
 export const Ride = model<IRide>("Ride", rideSchema);
