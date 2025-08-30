@@ -46,5 +46,5 @@ const getNewAccessToken = async (refreshToken: string) => {
 export const AuthServices = {
   createUser,
   loginUser,
-  getNewAccessToken
+  getNewAccessToken,
 };

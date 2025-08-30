@@ -20,7 +20,6 @@ const UserSchema = new Schema<IUser>(
       location: geoJsonPointSchema,
       address: {
         type: String,
-        required: true,
       },
     },
     totalEarnings: { type: Number, default: 0 },
