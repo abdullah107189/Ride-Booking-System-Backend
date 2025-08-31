@@ -1,6 +1,5 @@
 import { model, Schema } from "mongoose";
-import { ILocation, IRide, IStatusHistory, RideStatus } from "./ride.interface";
-import { optional } from "zod";
+import { IRide, IStatusHistory, RideStatus } from "./ride.interface";
 
 // GeoJSON Point Schema
 export const geoJsonPointSchema = new Schema(

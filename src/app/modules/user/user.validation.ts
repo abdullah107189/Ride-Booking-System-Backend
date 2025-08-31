@@ -1,4 +1,4 @@
-import z, { boolean } from "zod";
+import z from "zod";
 
 const vehicleInfoZodSchema = z.object({
   licensePlate: z

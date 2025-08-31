@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import { Document, Types } from "mongoose";
 export enum RideStatus {
   requested = "requested",
   accepted = "accepted",

@@ -11,6 +11,7 @@ const findMe = async (userId: string) => {
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "Not Found");
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password: pass, ...result } = user.toObject();
   if (result && result.role === ROLE.rider) {
     delete result.isApproved;
@@ -78,6 +79,7 @@ const updateOwnProfile = async (
     throw new AppError(httpStatus.NOT_FOUND, "User not found for update.");
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password, ...result } = newUpdateUser.toObject();
   return result;
 };
