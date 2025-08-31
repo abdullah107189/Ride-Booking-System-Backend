@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.UserRoutes = void 0;
+const express_1 = require("express");
+const user_controller_1 = require("./user.controller");
+const checkAuth_1 = require("../../middlewares/checkAuth");
+const user_interface_1 = require("./user.interface");
+const validationRequest_1 = require("../../middlewares/validationRequest");
+const user_validation_1 = require("./user.validation");
+const router = (0, express_1.Router)();
+router.get("/me", (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.ROLE)), user_controller_1.userController.findMe);
+router.patch("/updateOwnProfile", (0, validationRequest_1.validateRequest)(user_validation_1.updateUserZodSchema), (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.ROLE)), user_controller_1.userController.updateOwnProfile);
+router.patch("/changeOnlineStatus", (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.ROLE)), user_controller_1.userController.changeOnlineStatus);
+exports.UserRoutes = router;

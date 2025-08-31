@@ -17,6 +17,7 @@ export interface IUser {
   role: ROLE;
   isBlocked: boolean;
   isOnline: boolean;
+  
   // if driver
   isApproved?: boolean;
   vehicleInfo?: IVehicleInfo;
