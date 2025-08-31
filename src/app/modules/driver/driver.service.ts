@@ -6,7 +6,7 @@ import { calculateFare } from "../../utils/fareCalculator";
 import { RideStatus } from "../ride/ride.interface";
 
 const findNearbyRides = async (driverId: string) => {
-  return {};
+  return { driverId };
 };
 
 const getDriverEarningsHistory = async (driverId: string) => {
@@ -24,14 +24,11 @@ const getDriverEarningsHistory = async (driverId: string) => {
     );
   }
 
-  let totalEarnings = 0;
   const paidRideDetails = paidRides.map((ride) => {
     const fare = calculateFare(
       ride.pickupLocation.location.coordinates,
       ride.destinationLocation.location.coordinates
     );
-
-    totalEarnings += fare;
 
     return {
       rideId: ride._id,

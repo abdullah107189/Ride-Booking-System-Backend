@@ -20,6 +20,7 @@ const createUser = async (payload: IUser) => {
     ...rest,
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password: pass, ...result } = user.toObject();
   return result;
 };
@@ -39,6 +40,7 @@ const loginUser = async (payload: IUser) => {
     delete isUser.earnings;
     return isUser;
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password: pass, ...result } = isUser.toObject();
   return result;
 };
