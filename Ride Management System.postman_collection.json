@@ -1,0 +1,727 @@
+{
+	"info": {
+		"_postman_id": "6fce1389-68cb-4c39-83a5-e8b16285d8db",
+		"name": "Ride Management System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33082602"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// driver\r\n// {\r\n//     \"name\": \"Karim Mia\",\r\n//     \"email\": \"karim@example.com\",\r\n//     \"password\": \"asdfAa!1\",\r\n//     \"phone\": \"+8801334567891\",\r\n//     \"role\": \"driver\",\r\n//     \"vehicleInfo\": {\r\n//       \"licensePlate\": \"DHA-123\",\r\n//       \"model\": \"Toyota Corolla\",\r\n//       \"carType\": \"car\"\r\n//     },\r\n//     \"currentLocation\": {\r\n//       \"location\": {\r\n//         \"type\": \"Point\",\r\n//         \"coordinates\": [90.412518, 23.810331]\r\n//       },\r\n//       \"address\": \"Banani, Dhaka\"\r\n//     }\r\n//   }\r\n// rider \r\n// {\r\n//     \"name\": \"Rahim Mia\",\r\n//     \"email\": \"rahim@example.com\",\r\n//     \"password\": \"asdfAa!1\",\r\n//     \"phone\": \"+8801734567890\",\r\n//     \"role\": \"rider\"\r\n//   }\r\n// admin \r\n// {\r\n//     \"name\": \"admin\",\r\n//     \"email\": \"admin@gmail.com\",\r\n//     \"password\": \"asdfAa!1\",\r\n//     \"phone\": \"+8801734567890\",\r\n//     \"role\": \"rider\"\r\n// }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// driver\r\n// {\r\n//     \"email\": \"karim@example.com\",\r\n//     \"password\": \"asdfAa!1\"\r\n// }\r\n// rider\r\n// {\r\n//     \"email\": \"rahim@example.com\",\r\n//     \"password\": \"asdfAa!1\"\r\n// }\r\n// admin\r\n// {\r\n//     \"email\": \"admin@gmail.com\",\r\n//     \"password\": \"asdfAa!1\"\r\n// }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "new access token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/auth/refresh-token",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"refresh-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/auth/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "findme",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIyZDgyMTIyYWM2ZThhNDQyYjlkYTEiLCJlbWFpbCI6InJhaGltQGV4YW1wbGUuY29tIiwicm9sZSI6InJpZGVyIiwiaWF0IjoxNzU2NTUzNzQ4LCJleHAiOjE3NTY2NDAxNDh9.Gzvy_whMMRV23dT8xveLHWl4bIYyVU69Y2kYVCUSbLs",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/users/me",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update profile",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIyZDgyMTIyYWM2ZThhNDQyYjlkYTEiLCJlbWFpbCI6InJhaGltQGV4YW1wbGUuY29tIiwicm9sZSI6InJpZGVyIiwiaWF0IjoxNzU2NTUzNzQ4LCJleHAiOjE3NTY2NDAxNDh9.Gzvy_whMMRV23dT8xveLHWl4bIYyVU69Y2kYVCUSbLs",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// {\r\n//     \"name\":\"Rahim Mia Bhai\"\r\n// }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/users/updateOwnProfile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"updateOwnProfile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "changeOnlineStatus",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGFmMmY5NjZhZTU4ZTllOGE1MmI2ZDMiLCJlbWFpbCI6ImRyaXZlcjJAdGVzdC5jb20iLCJyb2xlIjoiZHJpdmVyIiwiaWF0IjoxNzU2Mzc4NjY4LCJleHAiOjE3NTY0NjUwNjh9.I7IQPAHMgdire5ZqSlytpPqn5rpmKIIUEPguPOzx76Y",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/user/changeOnlineStatus",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"changeOnlineStatus"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "rides",
+			"item": [
+				{
+					"name": "status changing part",
+					"item": [
+						{
+							"name": "accept",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIyZGZkNjZkNjE4YjY3YjM3OTRlM2IiLCJlbWFpbCI6ImthcmltQGV4YW1wbGUuY29tIiwicm9sZSI6ImRyaXZlciIsImlhdCI6MTc1NjU1NTQyOSwiZXhwIjoxNzU2NjQxODI5fQ.m3cih4S9G4Xn1Yo0HpIMjKFNcFvGo9B3CTBMlbxl7Z0",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/rides/68b2e6e7ddde11dae0769a27/accept",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"rides",
+										"68b2e6e7ddde11dae0769a27",
+										"accept"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "picked_up",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIyZGZkNjZkNjE4YjY3YjM3OTRlM2IiLCJlbWFpbCI6ImthcmltQGV4YW1wbGUuY29tIiwicm9sZSI6ImRyaXZlciIsImlhdCI6MTc1NjU1NTQyOSwiZXhwIjoxNzU2NjQxODI5fQ.m3cih4S9G4Xn1Yo0HpIMjKFNcFvGo9B3CTBMlbxl7Z0",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/rides/68b2e6e7ddde11dae0769a27/picked_up",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"rides",
+										"68b2e6e7ddde11dae0769a27",
+										"picked_up"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "in_transit",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIyZGZkNjZkNjE4YjY3YjM3OTRlM2IiLCJlbWFpbCI6ImthcmltQGV4YW1wbGUuY29tIiwicm9sZSI6ImRyaXZlciIsImlhdCI6MTc1NjU1NTQyOSwiZXhwIjoxNzU2NjQxODI5fQ.m3cih4S9G4Xn1Yo0HpIMjKFNcFvGo9B3CTBMlbxl7Z0",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/rides/68b2e6e7ddde11dae0769a27/in_transit",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"rides",
+										"68b2e6e7ddde11dae0769a27",
+										"in_transit"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "completed",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIyZGZkNjZkNjE4YjY3YjM3OTRlM2IiLCJlbWFpbCI6ImthcmltQGV4YW1wbGUuY29tIiwicm9sZSI6ImRyaXZlciIsImlhdCI6MTc1NjU1NTQyOSwiZXhwIjoxNzU2NjQxODI5fQ.m3cih4S9G4Xn1Yo0HpIMjKFNcFvGo9B3CTBMlbxl7Z0",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/rides/68b2e6e7ddde11dae0769a27/completed",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"rides",
+										"68b2e6e7ddde11dae0769a27",
+										"completed"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "cancel",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIyZGZkNjZkNjE4YjY3YjM3OTRlM2IiLCJlbWFpbCI6ImthcmltQGV4YW1wbGUuY29tIiwicm9sZSI6ImRyaXZlciIsImlhdCI6MTc1NjU1NTQyOSwiZXhwIjoxNzU2NjQxODI5fQ.m3cih4S9G4Xn1Yo0HpIMjKFNcFvGo9B3CTBMlbxl7Z0",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/rides/68b2e6e7ddde11dae0769a27/cancel",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"rides",
+										"68b2e6e7ddde11dae0769a27",
+										"cancel"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "paid",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIyZGZkNjZkNjE4YjY3YjM3OTRlM2IiLCJlbWFpbCI6ImthcmltQGV4YW1wbGUuY29tIiwicm9sZSI6ImRyaXZlciIsImlhdCI6MTc1NjU1NTQyOSwiZXhwIjoxNzU2NjQxODI5fQ.m3cih4S9G4Xn1Yo0HpIMjKFNcFvGo9B3CTBMlbxl7Z0",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/rides/68b2e6e7ddde11dae0769a27/paid",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"rides",
+										"68b2e6e7ddde11dae0769a27",
+										"paid"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "ride reqest",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIyZDgyMTIyYWM2ZThhNDQyYjlkYTEiLCJlbWFpbCI6InJhaGltQGV4YW1wbGUuY29tIiwicm9sZSI6InJpZGVyIiwiaWF0IjoxNzU2NTUzNzQ4LCJleHAiOjE3NTY2NDAxNDh9.Gzvy_whMMRV23dT8xveLHWl4bIYyVU69Y2kYVCUSbLs",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// {\r\n//     \"rider\": \"68b2d82122ac6e8a442b9da1\",\r\n//     \"pickupLocation\": {\r\n//         \"location\": {\r\n//             \"type\": \"Point\",\r\n//             \"coordinates\": [\r\n//                 90.412518,\r\n//                 23.810331\r\n//             ]\r\n//         },\r\n//         \"address\": \"Banani, Dhaka\"\r\n//     },\r\n//     \"destinationLocation\": {\r\n//         \"location\": {\r\n//             \"type\": \"Point\",\r\n//             \"coordinates\": [\r\n//                 90.408,\r\n//                 23.790\r\n//             ]\r\n//         },\r\n//         \"address\": \"Gulshan, Dhaka\"\r\n//     }\r\n// }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/rides/request",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"rides",
+								"request"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "find nearby drivers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIyZDgyMTIyYWM2ZThhNDQyYjlkYTEiLCJlbWFpbCI6InJhaGltQGV4YW1wbGUuY29tIiwicm9sZSI6InJpZGVyIiwiaWF0IjoxNzU2NTUzNzQ4LCJleHAiOjE3NTY2NDAxNDh9.Gzvy_whMMRV23dT8xveLHWl4bIYyVU69Y2kYVCUSbLs",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/rides/findNearbyDrivers/68b2e6e7ddde11dae0769a27",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"rides",
+								"findNearbyDrivers",
+								"68b2e6e7ddde11dae0769a27"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "available",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIyZGZkNjZkNjE4YjY3YjM3OTRlM2IiLCJlbWFpbCI6ImthcmltQGV4YW1wbGUuY29tIiwicm9sZSI6ImRyaXZlciIsImlhdCI6MTc1NjU1NTQyOSwiZXhwIjoxNzU2NjQxODI5fQ.m3cih4S9G4Xn1Yo0HpIMjKFNcFvGo9B3CTBMlbxl7Z0",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/rides/available",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"rides",
+								"available"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "all history",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIyZDgyMTIyYWM2ZThhNDQyYjlkYTEiLCJlbWFpbCI6InJhaGltQGV4YW1wbGUuY29tIiwicm9sZSI6InJpZGVyIiwiaWF0IjoxNzU2NTUzNzQ4LCJleHAiOjE3NTY2NDAxNDh9.Gzvy_whMMRV23dT8xveLHWl4bIYyVU69Y2kYVCUSbLs",
+								"type": "text"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/rides/history",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"rides",
+								"history"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "driver",
+			"item": [
+				{
+					"name": "getDriverEarnings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIyZGZkNjZkNjE4YjY3YjM3OTRlM2IiLCJlbWFpbCI6ImthcmltQGV4YW1wbGUuY29tIiwicm9sZSI6ImRyaXZlciIsImlhdCI6MTc1NjU1NTQyOSwiZXhwIjoxNzU2NjQxODI5fQ.m3cih4S9G4Xn1Yo0HpIMjKFNcFvGo9B3CTBMlbxl7Z0",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/drivers/earningHistory",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"drivers",
+								"earningHistory"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "admin",
+			"item": [
+				{
+					"name": "changeBlockStatus",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIyZmZlZWQzM2NmOGM4NmI2MmYxM2IiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1NjU2MTUwMSwiZXhwIjoxNzU2NjQ3OTAxfQ.kJNBA_GonPElxOYPiYaTLNt_Nz61OMrfA-lU3bR1y68",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/admin/changeBlockStatus/68b2ecf55d3f0dbbbeed2f96",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"changeBlockStatus",
+								"68b2ecf55d3f0dbbbeed2f96"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "changeApproveStatus",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIwNjQ3ZWY4NmIyZmFmN2M2YWI4MTUiLCJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU2MzkwNTI2LCJleHAiOjE3NTY0NzY5MjZ9.QcKVZowGDZGTbLyMQFNjaNZoFqBzrh-Gb3OiOU33H5M",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/admin/changeApproveStatus/68af319f6ae58e9e8a52b6fb",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"changeApproveStatus",
+								"68af319f6ae58e9e8a52b6fb"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get All users",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIyZmZlZWQzM2NmOGM4NmI2MmYxM2IiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1NjU2MTUwMSwiZXhwIjoxNzU2NjQ3OTAxfQ.kJNBA_GonPElxOYPiYaTLNt_Nz61OMrfA-lU3bR1y68",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"rider6@test.com\",\r\n    \"password\": \"asdfAa!1\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/admin/getAllUser",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"getAllUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllRide",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIyZmZlZWQzM2NmOGM4NmI2MmYxM2IiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1NjU2MTUwMSwiZXhwIjoxNzU2NjQ3OTAxfQ.kJNBA_GonPElxOYPiYaTLNt_Nz61OMrfA-lU3bR1y68",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"rider6@test.com\",\r\n    \"password\": \"asdfAa!1\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/admin/getAllRide",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"getAllRide"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "cancel ride",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIyZmZlZWQzM2NmOGM4NmI2MmYxM2IiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1NjU2MTUwMSwiZXhwIjoxNzU2NjQ3OTAxfQ.kJNBA_GonPElxOYPiYaTLNt_Nz61OMrfA-lU3bR1y68",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/admin/rides/68b2ed4d5d3f0dbbbeed2f99/cancel",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"rides",
+								"68b2ed4d5d3f0dbbbeed2f99",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
