@@ -27,6 +27,13 @@ router.get(
   RideController.findNearbyRides
 );
 
+// get rides assigned to the current driver
+router.get(
+  "/driver-rides",
+  checkAuth(ROLE.driver),
+  RideController.getDriverRides
+);
+
 // driver status change
 router.patch(
   "/:id/accept",

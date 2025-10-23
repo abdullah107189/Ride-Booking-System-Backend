@@ -123,6 +123,17 @@ const findNearbyDrivers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getDriverRides = catchAsync(async (req: Request, res: Response) => {
+  const driverId = req.user.userId;
+  const rides = await RideService.getRidesByDriver(driverId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    data: rides,
+    message: "Driver rides fetched successfully",
+  });
+});
+
 export const RideController = {
   createRequest,
   findNearbyRides,
@@ -137,4 +148,5 @@ export const RideController = {
 
   // TODO future
   findNearbyDrivers,
+  getDriverRides,
 };

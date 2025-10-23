@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import AppError from "../../errorHelpers/AppError";
 import { calculateFare } from "../../utils/fareCalculator";
 import { ROLE } from "../user/user.interface";
@@ -344,10 +345,77 @@ const findNearbyDrivers = async (rideId: string) => {
   return nearbyRides;
 };
 
+// ride.service.ts
+const getRidesByDriver = async (driverId: string) => {
+  const driver = await User.findById(driverId);
+  if (!driver) {
+    throw new AppError(httpStatus.NOT_FOUND, "Driver not found.");
+  }
+
+  const rides = await Ride.aggregate([
+    // Match rides for this driver
+    {
+      $match: {
+        driver: new mongoose.Types.ObjectId(driverId),
+      },
+    },
+    // Lookup rider information from users collection
+    {
+      $lookup: {
+        from: "users",
+        localField: "rider",
+        foreignField: "_id",
+        as: "riderInfo",
+      },
+    },
+    // Unwind the riderInfo array
+    {
+      $unwind: "$riderInfo",
+    },
+    // Project only necessary fields
+    {
+      $project: {
+        _id: 1,
+        pickupLocation: 1,
+        destinationLocation: 1,
+        status: 1,
+        fare: 1,
+        vehicleType: 1,
+        paymentMethod: 1,
+        statusHistory: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        acceptedAt: 1,
+        startedAt: 1,
+        completedAt: 1,
+
+        // Rider information only (no driver info)
+        rider: {
+          _id: "$riderInfo._id",
+          name: "$riderInfo.name",
+          email: "$riderInfo.email",
+          phone: "$riderInfo.phone",
+          rating: "$riderInfo.rating",
+          totalRides: "$riderInfo.totalRides",
+          isOnline: "$riderInfo.isOnline",
+        },
+      },
+    },
+    // Sort by latest rides first
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+  ]);
+
+  return rides;
+};
 export const RideService = {
   createRequest,
   findNearbyRides,
   getAllHistory,
+  getRidesByDriver,
   // status change
   cancelRequest,
   acceptsRequest,
