@@ -9,4 +9,9 @@ router.get(
   checkAuth(ROLE.driver),
   DriverController.getDriverEarningsHistory
 );
+router.get(
+  "/driver-ride-history",
+  checkAuth(ROLE.driver),
+  DriverController.getDriverRideHistory
+);
 export const DriverRoutes = router;

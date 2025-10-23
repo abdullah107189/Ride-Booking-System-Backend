@@ -125,7 +125,7 @@ const findNearbyDrivers = catchAsync(async (req: Request, res: Response) => {
 
 const getDriverRides = catchAsync(async (req: Request, res: Response) => {
   const driverId = req.user.userId;
-  const rides = await RideService.getRidesByDriver(driverId);
+  const rides = await RideService.getDriverRides(driverId);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -138,6 +138,7 @@ export const RideController = {
   createRequest,
   findNearbyRides,
   getAllHistory,
+  
   // status change
   cancelRequest,
   acceptsRequest,

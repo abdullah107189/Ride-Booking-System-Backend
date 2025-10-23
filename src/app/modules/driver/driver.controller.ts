@@ -26,4 +26,17 @@ const getDriverEarningsHistory = catchAsync(
     });
   }
 );
-export const DriverController = { showRideRequests, getDriverEarningsHistory };
+const getDriverRideHistory = catchAsync(
+  async (req: Request, res: Response) => {
+    const driverId = req.user.userId;
+    const rides = await DriverServices.getDriverRideHistory(driverId);
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.CREATED,
+      data: rides,
+      message: "Driver ride history retrieved successful",
+    });
+  }
+);
+
+export const DriverController = {getDriverRideHistory, showRideRequests, getDriverEarningsHistory };

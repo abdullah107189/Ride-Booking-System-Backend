@@ -4,6 +4,7 @@ import httpStatus from "http-status-codes";
 import { Ride } from "../ride/ride.model";
 import { calculateFare } from "../../utils/fareCalculator";
 import { RideStatus } from "../ride/ride.interface";
+import User from "../user/user.model";
 
 const findNearbyRides = async (driverId: string) => {
   return { driverId };
@@ -38,4 +39,66 @@ const getDriverEarningsHistory = async (driverId: string) => {
 
   return paidRideDetails;
 };
-export const DriverServices = { findNearbyRides, getDriverEarningsHistory };
+const getDriverRideHistory = async (driverId: string) => {
+  const driver = await User.findById(driverId);
+  if (!driver) {
+    throw new AppError(httpStatus.NOT_FOUND, "Driver not found.");
+  }
+  const historyRides = await Ride.aggregate([
+    {
+      $match: {
+        driver: new mongoose.Types.ObjectId(driverId),
+        status: {
+          $in: ["paid", "canceled"], // History statuses
+        },
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "rider",
+        foreignField: "_id",
+        as: "riderInfo",
+      },
+    },
+    {
+      $unwind: "$riderInfo",
+    },
+    {
+      $project: {
+        _id: 1,
+        pickupLocation: 1,
+        destinationLocation: 1,
+        status: 1,
+        fare: 1,
+        vehicleType: 1,
+        paymentMethod: 1,
+        statusHistory: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        acceptedAt: 1,
+        startedAt: 1,
+        completedAt: 1,
+
+        rider: {
+          _id: "$riderInfo._id",
+          name: "$riderInfo.name",
+          email: "$riderInfo.email",
+          phone: "$riderInfo.phone",
+        },
+      },
+    },
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+  ]);
+
+  return historyRides;
+};
+export const DriverServices = {
+  getDriverRideHistory,
+  findNearbyRides,
+  getDriverEarningsHistory,
+};

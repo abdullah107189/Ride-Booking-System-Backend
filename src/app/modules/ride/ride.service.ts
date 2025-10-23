@@ -346,7 +346,7 @@ const findNearbyDrivers = async (rideId: string) => {
 };
 
 // ride.service.ts
-const getRidesByDriver = async (driverId: string) => {
+const getDriverRides = async (driverId: string) => {
   const driver = await User.findById(driverId);
   if (!driver) {
     throw new AppError(httpStatus.NOT_FOUND, "Driver not found.");
@@ -357,6 +357,9 @@ const getRidesByDriver = async (driverId: string) => {
     {
       $match: {
         driver: new mongoose.Types.ObjectId(driverId),
+        status: {
+          $nin: ["paid", "canceled"], 
+        },
       },
     },
     // Lookup rider information from users collection
@@ -411,11 +414,12 @@ const getRidesByDriver = async (driverId: string) => {
 
   return rides;
 };
+
 export const RideService = {
   createRequest,
   findNearbyRides,
   getAllHistory,
-  getRidesByDriver,
+  getDriverRides,
   // status change
   cancelRequest,
   acceptsRequest,
