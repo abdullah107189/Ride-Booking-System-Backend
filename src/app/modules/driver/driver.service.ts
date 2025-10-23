@@ -44,12 +44,13 @@ const getDriverRideHistory = async (driverId: string) => {
   if (!driver) {
     throw new AppError(httpStatus.NOT_FOUND, "Driver not found.");
   }
+
   const historyRides = await Ride.aggregate([
     {
       $match: {
         driver: new mongoose.Types.ObjectId(driverId),
         status: {
-          $in: ["paid", "canceled"], // History statuses
+          $in: ["paid", "canceled"],
         },
       },
     },
@@ -95,7 +96,17 @@ const getDriverRideHistory = async (driverId: string) => {
     },
   ]);
 
-  return historyRides;
+  return {
+    driverInfo: {
+      _id: driver._id,
+      name: driver.name,
+      phone: driver.phone,
+      totalEarnings: driver.totalEarnings || 0,
+      vehicleInfo: driver.vehicleInfo,
+      rating: driver.rating,
+    },
+    history: historyRides,
+  };
 };
 export const DriverServices = {
   getDriverRideHistory,
