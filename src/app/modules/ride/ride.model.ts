@@ -57,6 +57,7 @@ const rideSchema = new Schema<IRide>(
       type: [statusHistorySchema],
       default: [{ updateStatus: "requested", timestamp: new Date() }],
     },
+    fare: { type: Number },
   },
   { timestamps: true }
 );

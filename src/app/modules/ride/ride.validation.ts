@@ -34,4 +34,5 @@ export const rideZodSchema = z.object({
       })
     )
     .optional(),
+  fare: z.number().optional(),
 });

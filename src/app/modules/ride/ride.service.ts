@@ -24,7 +24,15 @@ const createRequest = async (payload: IRide) => {
       "You already have an active ride request or are on a ride."
     );
   }
-  const createRide = await Ride.create(payload);
+  const fare = calculateFare(
+    payload.pickupLocation?.location?.coordinates,
+    payload.destinationLocation?.location?.coordinates
+  );
+  const payloadWithFare = {
+    ...payload,
+    fare: fare,
+  };
+  const createRide = await Ride.create(payloadWithFare);
   return createRide;
 };
 
@@ -358,7 +366,7 @@ const getDriverRides = async (driverId: string) => {
       $match: {
         driver: new mongoose.Types.ObjectId(driverId),
         status: {
-          $nin: ["paid", "canceled"], 
+          $nin: ["paid", "canceled"],
         },
       },
     },

@@ -29,7 +29,7 @@ const findNearbyRides = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     data: availableRides,
-    message: "Filter nearby drivers get successful",
+    message: "Filter nearby rides get successful",
   });
 });
 
@@ -138,7 +138,7 @@ export const RideController = {
   createRequest,
   findNearbyRides,
   getAllHistory,
-  
+
   // status change
   cancelRequest,
   acceptsRequest,
