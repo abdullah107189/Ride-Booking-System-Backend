@@ -17,14 +17,19 @@ router.patch(
   adminController.cancelRide
 );
 router.patch(
-  "/approveDriver/:id",
+  "/approve-driver/:id",
   checkAuth(ROLE.admin),
   adminController.approveDriver
 );
-router.patch(
-  "/getPendingApprovals/:id",
+router.get(
+  "/pending-approvals",
   checkAuth(ROLE.admin),
-  adminController.changeApproveStatus
+  adminController.getPendingApprovals
+);
+router.patch(
+  "/reject-driver/:id",
+  checkAuth(ROLE.admin),
+  adminController.rejectDriver
 );
 
 export const AdminRoutes = router;

@@ -14,17 +14,6 @@ const changeBlockStatus = catchAsync(async (req: Request, res: Response) => {
     message: "Changed block status",
   });
 });
-const approveDriver = catchAsync(async (req: Request, res: Response) => {
-  const driverId = req.params.id;
-  const adminId = req.user.userId;
-  const result = await adminServices.approveDriver(driverId, adminId);
-  sendResponse(res, {
-    success: true,
-    statusCode: httpStatus.CREATED,
-    data: result,
-    message: "Changed approved status",
-  });
-});
 
 const getAllUser = catchAsync(async (req: Request, res: Response) => {
   const result = await adminServices.getAllUser();
@@ -54,10 +43,46 @@ const cancelRide = catchAsync(async (req: Request, res: Response) => {
     message: "Ride canceled by admin",
   });
 });
+// ===================status=============
+const approveDriver = catchAsync(async (req: Request, res: Response) => {
+  const driverId = req.params.id;
+  const adminId = req.user.userId;
+  const result = await adminServices.approveDriver(driverId, adminId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    data: result,
+    message: "Changed approved status",
+  });
+});
+const rejectDriver = catchAsync(async (req: Request, res: Response) => {
+  const driverId = req.params.id;
+  const adminId = req.user.userId;
+
+  const result = await adminServices.rejectDriver(driverId, adminId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    data: result,
+    message: "Changed approved status",
+  });
+});
+const getPendingApprovals = catchAsync(async (req: Request, res: Response) => {
+  const result = await adminServices.getPendingApprovals();
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    data: result,
+    message: "Get all pending approval",
+  });
+});
+
 export const adminController = {
   changeBlockStatus,
   approveDriver,
   getAllUser,
   getAllRide,
   cancelRide,
+  getPendingApprovals,
+  rejectDriver,
 };

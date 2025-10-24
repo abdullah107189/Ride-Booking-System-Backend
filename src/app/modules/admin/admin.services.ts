@@ -24,30 +24,6 @@ const changeBlockStatus = async (userId: string) => {
 
   return updatedUser;
 };
-const approveDriver = async (driverId: string, adminId: string) => {
-  const driver = await User.findById(driverId);
-
-  if (!driver || driver.role !== "driver") {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "Driver not found or invalid role."
-    );
-  }
-  const updatedDriver = await User.findByIdAndUpdate(
-    driverId,
-    {
-      isApproved: true,
-      approvalStatus: "approved",
-      approvalReviewedAt: new Date(),
-      approvedBy: adminId,
-    },
-    { new: true }
-  ).select("-password");
-
-  // TODO: Send notification to driver
-
-  return updatedDriver;
-};
 
 const getAllUser = async () => {
   const users = await User.find({}).sort({ createdAt: -1 });
@@ -177,6 +153,65 @@ const cancelRide = async (rideId: string) => {
     throw new AppError(httpStatus.BAD_REQUEST, "Already completed this ride");
   }
 };
+// status
+const approveDriver = async (driverId: string, adminId: string) => {
+  const driver = await User.findById(driverId);
+
+  if (!driver || driver.role !== "driver") {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Driver not found or invalid role."
+    );
+  }
+  const updatedDriver = await User.findByIdAndUpdate(
+    driverId,
+    {
+      isApproved: true,
+      approvalStatus: "approved",
+      approvalReviewedAt: new Date(),
+      approvedBy: adminId,
+    },
+    { new: true }
+  ).select("-password");
+
+  // TODO: Send notification to driver
+
+  return updatedDriver;
+};
+const getPendingApprovals = async () => {
+  const pendingDrivers = await User.find({
+    role: "driver",
+    approvalStatus: "pending",
+  })
+    .select("-password")
+    .sort({ approvalRequestedAt: -1 });
+
+  return pendingDrivers;
+};
+
+const rejectDriver = async (driverId: string, adminId: string) => {
+  const driver = await User.findById(driverId);
+
+  if (!driver || driver.role !== "driver") {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Driver not found or invalid role."
+    );
+  }
+
+  const updatedDriver = await User.findByIdAndUpdate(
+    driverId,
+    {
+      isApproved: false,
+      approvalStatus: "rejected",
+      approvalReviewedAt: new Date(),
+      approvedBy: adminId,
+    },
+    { new: true }
+  ).select("-password");
+
+  return updatedDriver;
+};
 
 export const adminServices = {
   changeBlockStatus,
@@ -184,4 +219,6 @@ export const adminServices = {
   getAllUser,
   getAllRide,
   cancelRide,
+  getPendingApprovals,
+  rejectDriver,
 };
