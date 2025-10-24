@@ -44,7 +44,7 @@ const changeApproveStatus = async (userId: string) => {
   return updatedUser;
 };
 const getAllUser = async () => {
-  const users = await User.find({});
+  const users = await User.find({}).sort({ createdAt: -1 });
   if (!users) {
     throw new AppError(httpStatus.NOT_FOUND, "Not any rider or driver");
   }
@@ -54,7 +54,7 @@ const getAllUser = async () => {
   return { users: users, meta: { totalCountDriver, totalCountRider } };
 };
 const getAllRide = async () => {
-  const rides = await Ride.find({});
+  const rides = await Ride.find({}).sort({ createdAt: -1 });
   if (!rides) {
     throw new AppError(httpStatus.NOT_FOUND, "Not any rider or driver");
   }
