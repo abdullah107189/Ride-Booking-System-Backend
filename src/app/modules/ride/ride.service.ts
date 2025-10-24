@@ -301,7 +301,7 @@ const paidRequest = async (driverId: string, rideId: string) => {
     totalEarnings += fare; // total earn sum
 
     await User.findByIdAndUpdate(driverId, {
-      $inc: { totalEarnings },
+      $inc: { totalEarnings, totalRides: 1 },
     });
     const updateStatus = await Ride.findByIdAndUpdate(
       rideId,
