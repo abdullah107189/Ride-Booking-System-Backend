@@ -7,7 +7,7 @@ const UserSchema = new Schema<IUser>(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true, select: false },
+    password: { type: String, required: true },
     phone: { type: String, required: true },
     role: { type: String, enum: Object.values(ROLE), required: true },
     isBlocked: { type: Boolean, default: false },
@@ -22,7 +22,7 @@ const UserSchema = new Schema<IUser>(
     },
     approvalRequestedAt: { type: Date },
     approvalReviewedAt: { type: Date },
-    approvedBy: { type: Schema.Types.ObjectId, ref: "User" },
+    approvedBy: { type: Schema.Types.ObjectId, ref: "Users" },
     rejectionReason: { type: String },
 
     vehicleInfo: { type: vehicleInfoSchema },
