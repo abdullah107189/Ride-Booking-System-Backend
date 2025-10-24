@@ -31,6 +31,13 @@ const loginUser = async (payload: IUser) => {
   if (!isUser) {
     throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
   }
+  // Check if user is blocked
+  if (isUser.isBlocked) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "Your account has been blocked. Please contact support."
+    );
+  }
   await bcryptjs.compare(password, isUser.password as string);
   if (isUser && isUser.role === ROLE.rider) {
     delete isUser.isApproved;
