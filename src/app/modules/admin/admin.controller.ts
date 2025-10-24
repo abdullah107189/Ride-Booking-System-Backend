@@ -14,9 +14,10 @@ const changeBlockStatus = catchAsync(async (req: Request, res: Response) => {
     message: "Changed block status",
   });
 });
-const changeApproveStatus = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.params.id;
-  const result = await adminServices.changeApproveStatus(userId);
+const approveDriver = catchAsync(async (req: Request, res: Response) => {
+  const driverId = req.params.id;
+  const adminId = req.user.userId;
+  const result = await adminServices.approveDriver(driverId, adminId);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -24,6 +25,7 @@ const changeApproveStatus = catchAsync(async (req: Request, res: Response) => {
     message: "Changed approved status",
   });
 });
+
 const getAllUser = catchAsync(async (req: Request, res: Response) => {
   const result = await adminServices.getAllUser();
   sendResponse(res, {
@@ -54,7 +56,7 @@ const cancelRide = catchAsync(async (req: Request, res: Response) => {
 });
 export const adminController = {
   changeBlockStatus,
-  changeApproveStatus,
+  approveDriver,
   getAllUser,
   getAllRide,
   cancelRide,

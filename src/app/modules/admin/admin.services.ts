@@ -24,25 +24,31 @@ const changeBlockStatus = async (userId: string) => {
 
   return updatedUser;
 };
-const changeApproveStatus = async (userId: string) => {
-  if (!userId) {
-    throw new AppError(httpStatus.NOT_FOUND, "Id not found");
-  }
-  const user = await User.findById(userId);
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, "Not Found");
-  }
-  if (user.role !== ROLE.driver) {
-    throw new AppError(httpStatus.NOT_FOUND, "Only for driver role");
-  }
-  const updatedUser = await User.findByIdAndUpdate(
-    userId,
-    { isApproved: !user?.isApproved },
-    { new: true, runValidators: true }
-  ).select("name email isApproved");
+const approveDriver = async (driverId: string, adminId: string) => {
+  const driver = await User.findById(driverId);
 
-  return updatedUser;
+  if (!driver || driver.role !== "driver") {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Driver not found or invalid role."
+    );
+  }
+  const updatedDriver = await User.findByIdAndUpdate(
+    driverId,
+    {
+      isApproved: true,
+      approvalStatus: "approved",
+      approvalReviewedAt: new Date(),
+      approvedBy: adminId,
+    },
+    { new: true }
+  ).select("-password");
+
+  // TODO: Send notification to driver
+
+  return updatedDriver;
 };
+
 const getAllUser = async () => {
   const users = await User.find({}).sort({ createdAt: -1 });
   if (!users) {
@@ -171,9 +177,10 @@ const cancelRide = async (rideId: string) => {
     throw new AppError(httpStatus.BAD_REQUEST, "Already completed this ride");
   }
 };
+
 export const adminServices = {
   changeBlockStatus,
-  changeApproveStatus,
+  approveDriver,
   getAllUser,
   getAllRide,
   cancelRide,

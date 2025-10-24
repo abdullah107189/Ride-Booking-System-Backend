@@ -108,8 +108,44 @@ const getDriverRideHistory = async (driverId: string) => {
     history: historyRides,
   };
 };
+// src/controllers/driverController.js
+const requestApproval = async (driverId: string) => {
+  const driver = await User.findById(driverId);
+  if (!driver || driver.role !== "driver") {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Only drivers can request approval"
+    );
+  }
+  // Check if already approved
+  if (driver.isApproved) {
+    throw new AppError(httpStatus.NOT_FOUND, "Driver is already approved");
+  }
+  // Check if already pending
+  if (driver.approvalStatus === "pending") {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Approval request is already pending"
+    );
+  }
+
+  // Update driver status
+  const updatedDriver = await User.findByIdAndUpdate(
+    driverId,
+    {
+      approvalStatus: "pending",
+      approvalRequestedAt: new Date(),
+    },
+    { new: true }
+  );
+
+  // TODO: Send notification to admin
+
+  return updatedDriver;
+};
 export const DriverServices = {
   getDriverRideHistory,
   findNearbyRides,
   getDriverEarningsHistory,
+  requestApproval,
 };

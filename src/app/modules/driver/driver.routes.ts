@@ -14,4 +14,9 @@ router.get(
   checkAuth(ROLE.driver),
   DriverController.getDriverRideHistory
 );
+router.patch(
+  "/request-approval",
+  checkAuth(ROLE.driver),
+  DriverController.requestApproval
+);
 export const DriverRoutes = router;

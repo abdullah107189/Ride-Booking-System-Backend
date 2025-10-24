@@ -17,13 +17,25 @@ export interface IUser {
   role: ROLE;
   isBlocked: boolean;
   isOnline: boolean;
-  
-  // if driver
-  isApproved?: boolean;
-  vehicleInfo?: IVehicleInfo;
-  currentLocation?: ILocation; // [longitude, latitude]
-  totalEarnings?: number;
-  earnings?: IEarning[];
-  rating?: number;
-  totalRides?: number;
+
+  isApproved?: boolean | undefined;
+
+  approvalStatus?:
+    | "not_requested"
+    | "pending"
+    | "approved"
+    | "rejected"
+    | undefined;
+  approvalRequestedAt?: Date | undefined;
+  approvalReviewedAt?: Date | undefined;
+  approvedBy?: string | undefined;
+  rejectionReason?: string | undefined;
+
+  vehicleInfo?: IVehicleInfo | undefined;
+  currentLocation?: ILocation | undefined;
+
+  totalEarnings?: number | undefined;
+  earnings?: IEarning[] | undefined;
+  rating?: number | undefined;
+  totalRides?: number | undefined;
 }

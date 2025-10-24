@@ -17,7 +17,12 @@ router.patch(
   adminController.cancelRide
 );
 router.patch(
-  "/changeApproveStatus/:id",
+  "/approveDriver/:id",
+  checkAuth(ROLE.admin),
+  adminController.approveDriver
+);
+router.patch(
+  "/getPendingApprovals/:id",
   checkAuth(ROLE.admin),
   adminController.changeApproveStatus
 );

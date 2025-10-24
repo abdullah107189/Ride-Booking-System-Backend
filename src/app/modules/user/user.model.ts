@@ -7,14 +7,24 @@ const UserSchema = new Schema<IUser>(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: { type: String, required: true, select: false },
     phone: { type: String, required: true },
     role: { type: String, enum: Object.values(ROLE), required: true },
     isBlocked: { type: Boolean, default: false },
     isOnline: { type: Boolean, default: true },
 
-    // Driver specific fields
     isApproved: { type: Boolean, default: false },
+
+    approvalStatus: {
+      type: String,
+      enum: ["not_requested", "pending", "approved", "rejected"],
+      default: "not_requested",
+    },
+    approvalRequestedAt: { type: Date },
+    approvalReviewedAt: { type: Date },
+    approvedBy: { type: Schema.Types.ObjectId, ref: "User" },
+    rejectionReason: { type: String },
+
     vehicleInfo: { type: vehicleInfoSchema },
     currentLocation: {
       location: geoJsonPointSchema,
@@ -30,7 +40,6 @@ const UserSchema = new Schema<IUser>(
   { timestamps: true, versionKey: false }
 );
 
-// Conditional validation middleware
 UserSchema.pre("save", function (next) {
   if (this.role === ROLE.driver) {
     if (!this.vehicleInfo) {
@@ -38,6 +47,12 @@ UserSchema.pre("save", function (next) {
     }
   } else {
     this.isApproved = undefined;
+    this.approvalStatus = undefined;
+    this.approvalRequestedAt = undefined;
+    this.approvalReviewedAt = undefined;
+    this.approvedBy = undefined;
+    this.rejectionReason = undefined;
+
     this.vehicleInfo = undefined;
     this.currentLocation = undefined;
     this.totalEarnings = undefined;
@@ -47,6 +62,7 @@ UserSchema.pre("save", function (next) {
   }
   next();
 });
+
 UserSchema.index({ "currentLocation.location": "2dsphere" });
 const User = model<IUser>("User", UserSchema);
 export default User;

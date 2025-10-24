@@ -9,20 +9,25 @@ const vehicleInfoZodSchema = z.object({
   carType: z.enum(["car", "bike", "cng"]).default("car"),
 });
 
-const currentLocationZodSchema = z.object({
+const currentLocationInnerSchema = z.object({
   location: z
     .object({
       type: z.literal("Point"),
       coordinates: z.array(z.number()).length(2),
     })
+    .nullable()
     .optional(),
   address: z
     .string()
     .min(5, "Address must be at least 5 characters long.")
+    .nonempty("Address is required for location.")
     .optional(),
 });
+
 export const earningZodSchema = z.object({
-  rideId: z.string().refine((val) => /^[0-9a-fA-F]{24}$/.test(val)),
+  rideId: z.string().refine((val) => /^[0-9a-fA-F]{24}$/.test(val), {
+    message: "Invalid Ride ID format (expected MongoDB ObjectId)",
+  }),
   amount: z.number().min(0),
   date: z.string().datetime(),
 });
@@ -59,16 +64,16 @@ export const createUserZodSchema = z.object({
       message:
         "Phone number must be valid for Bangladesh. Format: +8801XXXXXXXXX or 01XXXXXXXXX",
     }),
-  role: z.string("Role must be a string"),
-  // driver
+  role: z.enum(["rider", "driver", "admin"], {
+    message: "Invalid role specified.",
+  }),
   vehicleInfo: vehicleInfoZodSchema.optional(),
-  currentLocation: currentLocationZodSchema.optional(),
+  currentLocation: currentLocationInnerSchema.optional(),
 });
 
 export const updateUserZodSchema = z.object({
   name: z
     .string("Name must be a string.")
-    .nonempty("Name is required")
     .min(2, { message: "Name must be at least 2 characters long." })
     .max(50, { message: "Name cannot exceed 50 characters." })
     .optional(),
@@ -101,14 +106,13 @@ export const updateUserZodSchema = z.object({
         "Phone number must be valid for Bangladesh. Format: +8801XXXXXXXXX or 01XXXXXXXXX",
     })
     .optional(),
-  role: z.string("Role must be a string").optional(),
-  // driver role
+  role: z.enum(["rider", "driver", "admin"]).optional(),
   isApproved: z.boolean().optional(),
   isOnline: z.boolean().optional(),
   totalEarnings: z.number().optional(),
   earnings: z.array(earningZodSchema).optional(),
   rating: z.number().min(0).max(5).optional(),
   totalRides: z.number().optional(),
-  vehicleInfo: vehicleInfoZodSchema.optional(),
-  currentLocation: currentLocationZodSchema.optional(),
+  vehicleInfo: vehicleInfoZodSchema.nullable().optional(),
+  currentLocation: currentLocationInnerSchema.nullable().optional(),
 });
