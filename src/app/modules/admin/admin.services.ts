@@ -54,15 +54,89 @@ const getAllUser = async () => {
   return { users: users, meta: { totalCountDriver, totalCountRider } };
 };
 const getAllRide = async () => {
-  const rides = await Ride.find({}).sort({ createdAt: -1 });
-  if (!rides) {
-    throw new AppError(httpStatus.NOT_FOUND, "Not any rider or driver");
+  const rides = await Ride.aggregate([
+    {
+      $sort: { createdAt: -1 },
+    },
+
+    {
+      $lookup: {
+        from: "users",
+        localField: "rider",
+        foreignField: "_id",
+        as: "riderInfo",
+      },
+    },
+
+    {
+      $unwind: {
+        path: "$riderInfo",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+
+    {
+      $lookup: {
+        from: "users",
+        localField: "driver",
+        foreignField: "_id",
+        as: "driverInfo",
+      },
+    },
+
+    {
+      $unwind: {
+        path: "$driverInfo",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+
+    {
+      $project: {
+        _id: 1,
+        pickupLocation: 1,
+        destinationLocation: 1,
+        status: 1,
+        fare: 1,
+        statusHistory: 1,
+        createdAt: 1,
+        updatedAt: 1,
+
+        rider: {
+          _id: "$riderInfo._id",
+          name: "$riderInfo.name",
+          email: "$riderInfo.email",
+          phone: "$riderInfo.phone",
+          isOnline: "$riderInfo.isOnline",
+          isBlocked: "$riderInfo.isBlocked",
+        },
+
+        driver: {
+          _id: "$driverInfo._id",
+          name: "$driverInfo.name",
+          email: "$driverInfo.email",
+          phone: "$driverInfo.phone",
+          isOnline: "$driverInfo.isOnline",
+          isBlocked: "$driverInfo.isBlocked",
+          isApproved: "$driverInfo.isApproved",
+          rating: "$driverInfo.rating",
+          totalRides: "$driverInfo.totalRides",
+          totalEarnings: "$driverInfo.totalEarnings",
+          vehicleInfo: "$driverInfo.vehicleInfo",
+          currentLocation: "$driverInfo.currentLocation",
+        },
+      },
+    },
+  ]);
+
+  if (!rides || rides.length === 0) {
+    throw new AppError(httpStatus.NOT_FOUND, "No rides found");
   }
+
   const totalCount = await Ride.countDocuments();
 
   return { data: rides, meta: totalCount };
 };
-
 const cancelRide = async (rideId: string) => {
   const rideInfo = await Ride.findById(rideId);
   if (!rideInfo) {
