@@ -466,7 +466,7 @@ const getCurrentRideByRider = async (riderId: string) => {
       $match: {
         rider: new mongoose.Types.ObjectId(riderId),
         status: {
-          $nin: ["paid", "canceled", "completed"],
+          $nin: ["paid", "canceled", ],
         },
       },
     },
