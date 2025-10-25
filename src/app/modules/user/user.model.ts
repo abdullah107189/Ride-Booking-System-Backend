@@ -14,7 +14,7 @@ const UserSchema = new Schema<IUser>(
     isOnline: { type: Boolean, default: true },
 
     isApproved: { type: Boolean, default: false },
-
+    isWorking: { type: Boolean, default: false },
     approvalStatus: {
       type: String,
       enum: ["not_requested", "pending", "approved", "rejected"],

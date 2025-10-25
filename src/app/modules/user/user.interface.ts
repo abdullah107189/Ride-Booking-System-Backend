@@ -19,7 +19,7 @@ export interface IUser {
   isOnline: boolean;
 
   isApproved?: boolean | undefined;
-
+  isWorking: boolean | undefined;
   approvalStatus?:
     | "not_requested"
     | "pending"
