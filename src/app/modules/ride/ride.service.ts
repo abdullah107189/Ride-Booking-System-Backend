@@ -332,6 +332,18 @@ const paidRequest = async (driverId: string, rideId: string) => {
         runValidators: true,
       }
     );
+
+    await User.findByIdAndUpdate(
+      driverId,
+      {
+        $set: { isWorking: false },
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
     return updateStatus;
   } else {
     throw new AppError(httpStatus.NOT_FOUND, "allow only in_transit rides.");
