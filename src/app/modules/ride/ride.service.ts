@@ -453,7 +453,7 @@ const getDriverRides = async (driverId: string) => {
   return rides;
 };
 
-// Get current active ride for rider
+// Get current active ride for riderf
 const getCurrentRideByRider = async (riderId: string) => {
   const rider = await User.findById(riderId);
   if (!rider) {
@@ -466,7 +466,7 @@ const getCurrentRideByRider = async (riderId: string) => {
       $match: {
         rider: new mongoose.Types.ObjectId(riderId),
         status: {
-          $nin: ["paid", "canceled", ],
+          $nin: ["paid", "canceled"],
         },
       },
     },

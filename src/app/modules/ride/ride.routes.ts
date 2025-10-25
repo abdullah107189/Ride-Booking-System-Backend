@@ -13,7 +13,6 @@ router.post(
   validateRequest(rideZodSchema),
   RideController.createRequest
 );
-router.get("/history", checkAuth(ROLE.rider), RideController.getAllHistory);
 router.patch(
   "/:id/cancel",
   checkAuth(ROLE.rider),
