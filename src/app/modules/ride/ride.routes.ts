@@ -34,7 +34,9 @@ router.get(
   RideController.getDriverRides
 );
 
-// driver status change
+router.get("/current", checkAuth(ROLE.rider), RideController.getCurrentRide);
+router.get("/history", checkAuth(ROLE.rider), RideController.getRideHistory);
+// ------------------driver status change-------------
 router.patch(
   "/:id/accept",
   checkAuth(ROLE.driver),

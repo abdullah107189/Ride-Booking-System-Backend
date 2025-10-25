@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose from "mongoose";
 import AppError from "../../errorHelpers/AppError";
 import { calculateFare } from "../../utils/fareCalculator";
@@ -423,11 +424,249 @@ const getDriverRides = async (driverId: string) => {
   return rides;
 };
 
+// Get current active ride for rider
+const getCurrentRideByRider = async (riderId: string) => {
+  const rider = await User.findById(riderId);
+  if (!rider) {
+    throw new AppError(httpStatus.NOT_FOUND, "Rider not found.");
+  }
+
+  const rides = await Ride.aggregate([
+    // Match rides for this rider with active status
+    {
+      $match: {
+        rider: new mongoose.Types.ObjectId(riderId),
+        status: {
+          $nin: ["paid", "canceled", "completed"],
+        },
+      },
+    },
+    // Lookup driver information from users collection
+    {
+      $lookup: {
+        from: "users",
+        localField: "driver",
+        foreignField: "_id",
+        as: "driverInfo",
+      },
+    },
+    // Unwind the driverInfo array (if driver exists)
+    {
+      $unwind: {
+        path: "$driverInfo",
+        preserveNullAndEmptyArrays: true, // Keep rides even if no driver assigned yet
+      },
+    },
+    // Lookup vehicle information
+    {
+      $lookup: {
+        from: "vehicles",
+        localField: "driverInfo.vehicle",
+        foreignField: "_id",
+        as: "vehicleInfo",
+      },
+    },
+    // Unwind vehicle info
+    {
+      $unwind: {
+        path: "$vehicleInfo",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    // Project necessary fields
+    {
+      $project: {
+        _id: 1,
+        pickupLocation: 1,
+        destinationLocation: 1,
+        status: 1,
+        fare: 1,
+        vehicleType: 1,
+        paymentMethod: 1,
+        statusHistory: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        acceptedAt: 1,
+        startedAt: 1,
+        completedAt: 1,
+
+        // Driver information (if driver exists)
+        driver: {
+          $cond: {
+            if: { $ne: ["$driverInfo", null] },
+            then: {
+              _id: "$driverInfo._id",
+              name: "$driverInfo.name",
+              email: "$driverInfo.email",
+              phone: "$driverInfo.phone",
+              rating: "$driverInfo.rating",
+              totalTrips: "$driverInfo.totalTrips",
+              isOnline: "$driverInfo.isOnline",
+              vehicle: "$vehicleInfo",
+            },
+            else: null,
+          },
+        },
+      },
+    },
+    // Sort by latest rides first
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+    // Limit to 1 result (most recent active ride)
+    {
+      $limit: 1,
+    },
+  ]);
+
+  return rides.length > 0 ? rides[0] : null;
+};
+
+// Get ride history for rider
+const getRideHistoryByRider = async (riderId: string, query: any = {}) => {
+  const rider = await User.findById(riderId);
+  if (!rider) {
+    throw new AppError(httpStatus.NOT_FOUND, "Rider not found.");
+  }
+
+  const {
+    page = 1,
+    limit = 10,
+    status,
+    startDate,
+    endDate,
+    sortBy = "createdAt",
+    sortOrder = "desc",
+  } = query;
+
+  const matchStage: any = {
+    rider: new mongoose.Types.ObjectId(riderId),
+  };
+
+  // Filter by status if provided
+  if (status && status !== "all") {
+    matchStage.status = status;
+  }
+
+  // Filter by date range
+  if (startDate || endDate) {
+    matchStage.createdAt = {};
+    if (startDate) {
+      matchStage.createdAt.$gte = new Date(startDate);
+    }
+    if (endDate) {
+      matchStage.createdAt.$lte = new Date(endDate);
+    }
+  }
+
+  const aggregationPipeline: any[] = [
+    { $match: matchStage },
+    // Lookup driver information
+    {
+      $lookup: {
+        from: "users",
+        localField: "driver",
+        foreignField: "_id",
+        as: "driverInfo",
+      },
+    },
+    {
+      $unwind: {
+        path: "$driverInfo",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    // Lookup vehicle information
+    {
+      $lookup: {
+        from: "vehicles",
+        localField: "driverInfo.vehicle",
+        foreignField: "_id",
+        as: "vehicleInfo",
+      },
+    },
+    {
+      $unwind: {
+        path: "$vehicleInfo",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        pickupLocation: 1,
+        destinationLocation: 1,
+        status: 1,
+        fare: 1,
+        vehicleType: 1,
+        paymentMethod: 1,
+        statusHistory: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        acceptedAt: 1,
+        startedAt: 1,
+        completedAt: 1,
+        // Driver information
+        driver: {
+          $cond: {
+            if: { $ne: ["$driverInfo", null] },
+            then: {
+              _id: "$driverInfo._id",
+              name: "$driverInfo.name",
+              phone: "$driverInfo.phone",
+              rating: "$driverInfo.rating",
+              totalTrips: "$driverInfo.totalTrips",
+              vehicle: "$vehicleInfo",
+            },
+            else: null,
+          },
+        },
+      },
+    },
+    // Sort
+    {
+      $sort: {
+        [sortBy]: sortOrder === "desc" ? -1 : 1,
+      },
+    },
+  ];
+
+  // Add pagination
+  const skip = (page - 1) * limit;
+  aggregationPipeline.push({ $skip: skip }, { $limit: parseInt(limit) });
+
+  const rides = await Ride.aggregate(aggregationPipeline);
+
+  // Get total count for pagination
+  const totalMatchStage = { ...matchStage };
+  const totalResult = await Ride.aggregate([
+    { $match: totalMatchStage },
+    { $count: "total" },
+  ]);
+
+  const total = totalResult.length > 0 ? totalResult[0].total : 0;
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    rides,
+    pagination: {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      total,
+      totalPages,
+    },
+  };
+};
+
 export const RideService = {
   createRequest,
   findNearbyRides,
   getAllHistory,
   getDriverRides,
+  getCurrentRideByRider,
+  getRideHistoryByRider,
   // status change
   cancelRequest,
   acceptsRequest,

@@ -37,8 +37,7 @@ const loginUser = async (payload: IUser) => {
       httpStatus.FORBIDDEN,
       "Your account has been blocked. Please contact support."
     );
-  }
-  await bcryptjs.compare(password, isUser.password as string);
+  }  await bcryptjs.compare(password, isUser.password as string);
   if (isUser && isUser.role === ROLE.rider) {
     delete isUser.isApproved;
     delete isUser.totalEarnings;
