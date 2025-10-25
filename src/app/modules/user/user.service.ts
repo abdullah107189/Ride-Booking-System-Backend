@@ -19,6 +19,7 @@ const findMe = async (userId: string) => {
     delete result.rating;
     delete result.totalRides;
     delete result.earnings;
+    delete result.isWorking;
     return result;
   }
   return result;
@@ -42,7 +43,7 @@ const updateOwnProfile = async (
     "createdAt",
     "updatedAt",
   ];
-  
+
   for (const field of Object.keys(payload)) {
     if (systemOnlyFields.includes(field)) {
       throw new AppError(
