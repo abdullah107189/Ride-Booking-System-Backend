@@ -33,6 +33,7 @@ router.get(
   checkAuth(ROLE.driver),
   RideController.getDriverRides
 );
+router.get("/rider/stats", checkAuth(ROLE.rider), RideController.getRiderStats);
 
 router.get("/current", checkAuth(ROLE.rider), RideController.getCurrentRide);
 router.get("/history", checkAuth(ROLE.rider), RideController.getRideHistory);

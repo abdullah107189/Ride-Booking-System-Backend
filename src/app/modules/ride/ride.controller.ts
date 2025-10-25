@@ -164,12 +164,27 @@ const getRideHistory = catchAsync(async (req: Request, res: Response) => {
     pagination: result.pagination,
   });
 });
+const getRiderStats = catchAsync(async (req: Request, res: Response) => {
+  const riderId = req.user?.userId;
+  if (!riderId) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "User not authenticated");
+  }
+
+  const stats = await RideService.getRiderStats(riderId);
+
+  res.send({
+    success: true,
+    message: "Rider stats fetched successfully",
+    data: stats,
+  });
+});
 export const RideController = {
   createRequest,
   findNearbyRides,
   getAllHistory,
   getCurrentRide,
   getRideHistory,
+  getRiderStats,
 
   // status change
   cancelRequest,

@@ -660,6 +660,153 @@ const getRideHistoryByRider = async (riderId: string, query: any = {}) => {
   };
 };
 
+const getRiderStats = async (riderId: string) => {
+  const rider = await User.findById(riderId);
+  if (!rider) {
+    throw new AppError(httpStatus.NOT_FOUND, "Rider not found.");
+  }
+
+  const currentDate = new Date();
+  const startOfMonth = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    1
+  );
+  const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
+
+  const stats = await Ride.aggregate([
+    {
+      $match: {
+        rider: new mongoose.Types.ObjectId(riderId),
+      },
+    },
+    {
+      $facet: {
+        // Total completed rides (completed + paid status)
+        completedRides: [
+          {
+            $match: {
+              status: { $in: ["completed", "paid"] },
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              count: { $sum: 1 },
+              totalSpent: { $sum: "$fare" },
+            },
+          },
+        ],
+        // This month rides
+        thisMonthRides: [
+          {
+            $match: {
+              createdAt: { $gte: startOfMonth },
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              count: { $sum: 1 },
+            },
+          },
+        ],
+        // All rides count
+        totalRides: [
+          {
+            $group: {
+              _id: null,
+              count: { $sum: 1 },
+            },
+          },
+        ],
+        // Monthly breakdown for chart
+        monthlyData: [
+          {
+            $match: {
+              status: { $in: ["completed", "paid"] },
+              createdAt: { $gte: startOfYear },
+            },
+          },
+          {
+            $group: {
+              _id: {
+                year: { $year: "$createdAt" },
+                month: { $month: "$createdAt" },
+              },
+              rides: { $sum: 1 },
+              spent: { $sum: "$fare" },
+            },
+          },
+          {
+            $sort: {
+              "_id.year": 1,
+              "_id.month": 1,
+            },
+          },
+        ],
+        // Favorite destinations
+        topDestinations: [
+          {
+            $match: {
+              status: { $in: ["completed", "paid"] },
+            },
+          },
+          {
+            $group: {
+              _id: "$destinationLocation.address",
+              count: { $sum: 1 },
+            },
+          },
+          {
+            $sort: { count: -1 },
+          },
+          {
+            $limit: 5,
+          },
+        ],
+      },
+    },
+    {
+      $project: {
+        totalRides: {
+          $ifNull: [{ $arrayElemAt: ["$totalRides.count", 0] }, 0],
+        },
+        completedRides: {
+          $ifNull: [{ $arrayElemAt: ["$completedRides.count", 0] }, 0],
+        },
+        totalSpent: {
+          $ifNull: [{ $arrayElemAt: ["$completedRides.totalSpent", 0] }, 0],
+        },
+        thisMonthRides: {
+          $ifNull: [{ $arrayElemAt: ["$thisMonthRides.count", 0] }, 0],
+        },
+        monthlyData: 1,
+        topDestinations: 1,
+      },
+    },
+  ]);
+
+  // Format the response
+  const result = stats[0] || {
+    totalRides: 0,
+    completedRides: 0,
+    totalSpent: 0,
+    thisMonthRides: 0,
+    monthlyData: [],
+    topDestinations: [],
+  };
+
+  return {
+    totalRides: result.totalRides,
+    completedRides: result.completedRides,
+    totalSpent: result.totalSpent,
+    thisMonthRides: result.thisMonthRides,
+    monthlyData: result.monthlyData,
+    favoriteDestination: result.topDestinations[0]?._id || "No rides yet",
+    monthlySpending: result.monthlyData,
+  };
+};
 export const RideService = {
   createRequest,
   findNearbyRides,
@@ -667,6 +814,7 @@ export const RideService = {
   getDriverRides,
   getCurrentRideByRider,
   getRideHistoryByRider,
+  getRiderStats,
   // status change
   cancelRequest,
   acceptsRequest,
