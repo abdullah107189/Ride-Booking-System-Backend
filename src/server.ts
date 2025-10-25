@@ -5,7 +5,8 @@ import { envVars } from "./app/config/env";
 let server: Server;
 const startServer = async () => {
   try {
-    const uri = "mongodb://localhost:27017/ride-management-system";
+    // const uri = "mongodb://localhost:27017/ride-management-system";
+    const uri = envVars.DB_URL;
 
     if (!uri) {
       throw new Error("Database URL is not defined in environment variables.");
