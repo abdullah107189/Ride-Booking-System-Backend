@@ -43,6 +43,7 @@ const findMe = (userId) => __awaiter(void 0, void 0, void 0, function* () {
         delete result.rating;
         delete result.totalRides;
         delete result.earnings;
+        delete result.isWorking;
         return result;
     }
     return result;

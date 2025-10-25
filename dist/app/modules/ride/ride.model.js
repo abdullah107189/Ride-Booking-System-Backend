@@ -49,6 +49,7 @@ const rideSchema = new mongoose_1.Schema({
         type: [statusHistorySchema],
         default: [{ updateStatus: "requested", timestamp: new Date() }],
     },
+    fare: { type: Number },
 }, { timestamps: true });
 rideSchema.index({ "pickupLocation.location": "2dsphere" });
 exports.Ride = (0, mongoose_1.model)("Ride", rideSchema);

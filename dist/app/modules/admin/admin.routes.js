@@ -10,5 +10,7 @@ router.get("/getAllUser", (0, checkAuth_1.checkAuth)(user_interface_1.ROLE.admin
 router.get("/getAllRide", (0, checkAuth_1.checkAuth)(user_interface_1.ROLE.admin), admin_controller_1.adminController.getAllRide);
 router.patch("/changeBlockStatus/:id", (0, checkAuth_1.checkAuth)(user_interface_1.ROLE.admin), admin_controller_1.adminController.changeBlockStatus);
 router.patch("/rides/:id/cancel", (0, checkAuth_1.checkAuth)(user_interface_1.ROLE.admin), admin_controller_1.adminController.cancelRide);
-router.patch("/changeApproveStatus/:id", (0, checkAuth_1.checkAuth)(user_interface_1.ROLE.admin), admin_controller_1.adminController.changeApproveStatus);
+router.patch("/approve-driver/:id", (0, checkAuth_1.checkAuth)(user_interface_1.ROLE.admin), admin_controller_1.adminController.approveDriver);
+router.get("/pending-approvals", (0, checkAuth_1.checkAuth)(user_interface_1.ROLE.admin), admin_controller_1.adminController.getPendingApprovals);
+router.patch("/reject-driver/:id", (0, checkAuth_1.checkAuth)(user_interface_1.ROLE.admin), admin_controller_1.adminController.rejectDriver);
 exports.AdminRoutes = router;

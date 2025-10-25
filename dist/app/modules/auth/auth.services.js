@@ -48,6 +48,10 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     if (!isUser) {
         throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "User Not Found");
     }
+    // Check if user is blocked
+    if (isUser.isBlocked) {
+        throw new AppError_1.default(http_status_codes_1.default.FORBIDDEN, "Your account has been blocked. Please contact support.");
+    }
     yield bcryptjs_1.default.compare(password, isUser.password);
     if (isUser && isUser.role === user_interface_1.ROLE.rider) {
         delete isUser.isApproved;

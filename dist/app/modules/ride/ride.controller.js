@@ -40,7 +40,7 @@ const findNearbyRides = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(voi
         success: true,
         statusCode: http_status_codes_1.default.CREATED,
         data: availableRides,
-        message: "Filter nearby drivers get successful",
+        message: "Filter nearby rides get successful",
     });
 }));
 const getAllHistory = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -130,10 +130,63 @@ const findNearbyDrivers = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(v
         message: "Filter nearby drivers get successful",
     });
 }));
+const getDriverRides = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const driverId = req.user.userId;
+    const rides = yield ride_service_1.RideService.getDriverRides(driverId);
+    (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_codes_1.default.OK,
+        data: rides,
+        message: "Driver rides fetched successfully",
+    });
+}));
+const getCurrentRide = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const riderId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+    if (!riderId) {
+        throw new AppError_1.default(http_status_codes_1.default.UNAUTHORIZED, "User not authenticated");
+    }
+    const ride = yield ride_service_1.RideService.getCurrentRideByRider(riderId);
+    res.send({
+        success: true,
+        message: "Current ride fetched successfully",
+        data: ride,
+    });
+}));
+const getRideHistory = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const riderId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+    if (!riderId) {
+        throw new AppError_1.default(http_status_codes_1.default.UNAUTHORIZED, "User not authenticated");
+    }
+    const result = yield ride_service_1.RideService.getRideHistoryByRider(riderId, req.query);
+    res.send({
+        success: true,
+        message: "Ride history fetched successfully",
+        data: result.rides,
+        pagination: result.pagination,
+    });
+}));
+const getRiderStats = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const riderId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+    if (!riderId) {
+        throw new AppError_1.default(http_status_codes_1.default.UNAUTHORIZED, "User not authenticated");
+    }
+    const stats = yield ride_service_1.RideService.getRiderStats(riderId);
+    res.send({
+        success: true,
+        message: "Rider stats fetched successfully",
+        data: stats,
+    });
+}));
 exports.RideController = {
     createRequest,
     findNearbyRides,
     getAllHistory,
+    getCurrentRide,
+    getRideHistory,
+    getRiderStats,
     // status change
     cancelRequest,
     acceptsRequest,
@@ -143,4 +196,5 @@ exports.RideController = {
     paidRequest,
     // TODO future
     findNearbyDrivers,
+    getDriverRides,
 };

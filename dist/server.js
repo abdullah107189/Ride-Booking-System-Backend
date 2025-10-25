@@ -18,7 +18,8 @@ const env_1 = require("./app/config/env");
 let server;
 const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const uri = "mongodb://localhost:27017";
+        // const uri = "mongodb://localhost:27017/ride-management-system";
+        const uri = env_1.envVars.DB_URL;
         if (!uri) {
             throw new Error("Database URL is not defined in environment variables.");
         }

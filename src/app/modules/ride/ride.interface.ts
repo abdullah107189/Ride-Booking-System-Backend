@@ -28,6 +28,7 @@ export interface IRide extends Document {
   driver?: Types.ObjectId;
   pickupLocation: ILocation;
   destinationLocation: ILocation;
+  fare: number;
   status: RideStatus;
   statusHistory: IStatusHistory[];
 }

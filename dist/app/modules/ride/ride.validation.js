@@ -30,4 +30,5 @@ exports.rideZodSchema = zod_1.z.object({
         timestamp: zod_1.z.string().datetime().optional(),
     }))
         .optional(),
+    fare: zod_1.z.number().optional(),
 });

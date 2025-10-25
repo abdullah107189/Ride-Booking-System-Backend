@@ -27,16 +27,6 @@ const changeBlockStatus = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(v
         message: "Changed block status",
     });
 }));
-const changeApproveStatus = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.params.id;
-    const result = yield admin_services_1.adminServices.changeApproveStatus(userId);
-    (0, sendResponse_1.sendResponse)(res, {
-        success: true,
-        statusCode: http_status_codes_1.default.CREATED,
-        data: result,
-        message: "Changed approved status",
-    });
-}));
 const getAllUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield admin_services_1.adminServices.getAllUser();
     (0, sendResponse_1.sendResponse)(res, {
@@ -65,10 +55,44 @@ const cancelRide = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, 
         message: "Ride canceled by admin",
     });
 }));
+// ===================status=============
+const approveDriver = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const driverId = req.params.id;
+    const adminId = req.user.userId;
+    const result = yield admin_services_1.adminServices.approveDriver(driverId, adminId);
+    (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_codes_1.default.CREATED,
+        data: result,
+        message: "Changed approved status",
+    });
+}));
+const rejectDriver = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const driverId = req.params.id;
+    const adminId = req.user.userId;
+    const result = yield admin_services_1.adminServices.rejectDriver(driverId, adminId);
+    (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_codes_1.default.CREATED,
+        data: result,
+        message: "Changed approved status",
+    });
+}));
+const getPendingApprovals = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield admin_services_1.adminServices.getPendingApprovals();
+    (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_codes_1.default.CREATED,
+        data: result,
+        message: "Get all pending approval",
+    });
+}));
 exports.adminController = {
     changeBlockStatus,
-    changeApproveStatus,
+    approveDriver,
     getAllUser,
     getAllRide,
     cancelRide,
+    getPendingApprovals,
+    rejectDriver,
 };

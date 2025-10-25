@@ -36,4 +36,29 @@ const getDriverEarningsHistory = (0, catchAsync_1.catchAsync)((req, res) => __aw
         message: "Earnings history retrieved successful",
     });
 }));
-exports.DriverController = { showRideRequests, getDriverEarningsHistory };
+const getDriverRideHistory = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const driverId = req.user.userId;
+    const rides = yield driver_service_1.DriverServices.getDriverRideHistory(driverId);
+    (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_codes_1.default.CREATED,
+        data: rides,
+        message: "Driver ride history retrieved successful",
+    });
+}));
+const requestApproval = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const driverId = req.user.userId;
+    const rides = yield driver_service_1.DriverServices.requestApproval(driverId);
+    (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_codes_1.default.CREATED,
+        data: rides,
+        message: "Request Approval on Admin",
+    });
+}));
+exports.DriverController = {
+    getDriverRideHistory,
+    showRideRequests,
+    getDriverEarningsHistory,
+    requestApproval,
+};
