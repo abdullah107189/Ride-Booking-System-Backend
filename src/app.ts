@@ -8,7 +8,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: "https://ride-booking-system-frontend-omega.vercel.app",
+    origin: "https://ride-booking-system-frontend-omega.vercel.app/",
     credentials: true,
   })
 );
