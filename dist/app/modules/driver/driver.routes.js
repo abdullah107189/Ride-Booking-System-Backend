@@ -7,6 +7,8 @@ const user_interface_1 = require("../user/user.interface");
 const driver_controller_1 = require("./driver.controller");
 const router = (0, express_1.Router)();
 router.get("/earningHistory", (0, checkAuth_1.checkAuth)(user_interface_1.ROLE.driver), driver_controller_1.DriverController.getDriverEarningsHistory);
-router.get("/driver-ride-history", (0, checkAuth_1.checkAuth)(user_interface_1.ROLE.driver), driver_controller_1.DriverController.getDriverRideHistory);
+router.get("/driver-ride-history", 
+// checkAuth(ROLE.driver),
+driver_controller_1.DriverController.getDriverRideHistory);
 router.patch("/request-approval", (0, checkAuth_1.checkAuth)(user_interface_1.ROLE.driver), driver_controller_1.DriverController.requestApproval);
 exports.DriverRoutes = router;

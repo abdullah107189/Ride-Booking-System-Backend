@@ -37,8 +37,8 @@ const getDriverEarningsHistory = (0, catchAsync_1.catchAsync)((req, res) => __aw
     });
 }));
 const getDriverRideHistory = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const driverId = req.user.userId;
-    const rides = yield driver_service_1.DriverServices.getDriverRideHistory(driverId);
+    // const driverId = req.user.userId;
+    const rides = yield driver_service_1.DriverServices.getDriverRideHistory("68fc9f1cd23b33b3173c9b8c");
     (0, sendResponse_1.sendResponse)(res, {
         success: true,
         statusCode: http_status_codes_1.default.CREATED,

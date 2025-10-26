@@ -1,20 +1,23 @@
+import { envVars } from "./app/config/env";
 import mongoose from "mongoose";
 import { Server } from "http";
 import app from "./app";
-import { envVars } from "./app/config/env";
 let server: Server;
+const port = process.env.PORT || 3000;
 const startServer = async () => {
   try {
     // const uri = "mongodb://localhost:27017/ride-management-system";
     const uri = envVars.DB_URL;
-
     if (!uri) {
       throw new Error("Database URL is not defined in environment variables.");
     }
     await mongoose.connect(uri);
+
     console.log("server connected");
     server = app.listen(envVars.PORT, () => {
-      console.log(`Server is listening on port :-- ${envVars.PORT}`);
+      console.log(
+        `🚀 Server running in ${envVars.NODE_DEV} mode on port ${port}`
+      );
     });
   } catch (error) {
     console.log(error);

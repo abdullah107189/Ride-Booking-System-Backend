@@ -35,6 +35,7 @@ const getAllUser = async () => {
 
   return { users: users, meta: { totalCountDriver, totalCountRider } };
 };
+
 const getAllRide = async () => {
   const rides = await Ride.aggregate([
     {

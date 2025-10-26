@@ -44,7 +44,7 @@ const getDriverEarningsHistory = (driverId) => __awaiter(void 0, void 0, void 0,
     return paidRideDetails;
 });
 const getDriverRideHistory = (driverId) => __awaiter(void 0, void 0, void 0, function* () {
-    const driver = yield user_model_1.default.findById(driverId);
+    const driver = yield user_model_1.default.findById("68fc9f1cd23b33b3173c9b8c");
     if (!driver) {
         throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "Driver not found.");
     }

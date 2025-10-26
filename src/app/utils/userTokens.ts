@@ -27,6 +27,7 @@ export const createTokens = (user: Partial<IUser>) => {
     refreshToken,
   };
 };
+
 export const createNewAccessTokenWithRefreshToken = async (
   refreshToken: string
 ) => {

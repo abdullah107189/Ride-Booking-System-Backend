@@ -12,21 +12,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const env_1 = require("./app/config/env");
 const mongoose_1 = __importDefault(require("mongoose"));
 const app_1 = __importDefault(require("./app"));
-const env_1 = require("./app/config/env");
 let server;
+const port = process.env.PORT || 3000;
 const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // const uri = "mongodb://localhost:27017/ride-management-system";
-        const uri = env_1.envVars.DB_URL;
-        if (!uri) {
-            throw new Error("Database URL is not defined in environment variables.");
-        }
-        yield mongoose_1.default.connect(uri);
+        // const uri = envVars.DB_URL;
+        // if (!uri) {
+        //   throw new Error("Database URL is not defined in environment variables.");
+        // }
+        yield mongoose_1.default.connect(
+        // "mongodb+srv://ride-management-system-107189:KSkhIIMeUFJEmHZH@cluster0.fx40ttv.mongodb.net/Ride_Management_System?appName=Cluster0",
+        // "mongodb+srv://ride-management-system-107189:WTkIXHmVN3IEnKfF@cluster0.fx40ttv.mongodb.net/Ride_Management_System?appName=Cluster0"
+        // `mongodb+srv://rider-management-system:uOEzfUndvhGz0UJh@cluster0.ujjks.mongodb.net/Ride_Management_System?appName=Cluster0`
+        // "mongodb+srv://rider_management_107189:aRbTUXXUQ5U4KIWz@cluster0.ujjks.mongodb.net/Ride_Management_System?appName=Cluster0"
+        "mongodb+srv://boss-restaurant:MJsGshCa8WwgKyU6@cluster0.fx40ttv.mongodb.net/boss-restaurant?appName=Cluster0");
         console.log("server connected");
         server = app_1.default.listen(env_1.envVars.PORT, () => {
-            console.log(`Server is listening on port :-- ${env_1.envVars.PORT}`);
+            console.log(`🚀 Server running in ${env_1.envVars.NODE_DEV} mode on port ${port}`);
         });
     }
     catch (error) {

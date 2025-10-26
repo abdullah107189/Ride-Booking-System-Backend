@@ -8,15 +8,16 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://ride-booking-system-frontend-omega.vercel.app",
-    ],
+    origin: "https://ride-booking-system-frontend-omega.vercel.app",
     credentials: true,
   })
 );
 app.use(cookieParser());
 app.use("/api/v1", router);
+
+app.get("/usersData", async (req: Request, res: Response) => {
+  res.status(200).json({ message: "welcome to ride booking system" });
+});
 
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({ message: "welcome to ride booking system" });
