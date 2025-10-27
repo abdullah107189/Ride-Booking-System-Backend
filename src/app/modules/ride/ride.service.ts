@@ -67,13 +67,71 @@ const findNearbyRides = async (userId: string) => {
   });
   return nearbyRides;
 };
+const getAllHistory = async (riderId: string, query: any = {}) => {
+  const {
+    page = 1,
+    limit = 10,
+    status,
+    search,
+    startDate,
+    endDate,
+    minFare,
+    maxFare,
+  } = query;
 
-const getAllHistory = async (riderId: string) => {
-  const isRide = await Ride.find({ rider: riderId });
-  if (!isRide) {
-    throw new AppError(httpStatus.NOT_FOUND, "Ride not found !");
+  // Build filter object
+  const filter: any = { rider: new mongoose.Types.ObjectId(riderId) };
+
+  // Simple filters
+  if (status && status !== "all") filter.status = status;
+
+  if (startDate || endDate) {
+    filter.createdAt = {};
+    if (startDate) filter.createdAt.$gte = new Date(startDate);
+    if (endDate) filter.createdAt.$lte = new Date(endDate);
   }
-  return isRide;
+
+  if (minFare || maxFare) {
+    filter.fare = {};
+    if (minFare) filter.fare.$gte = Number(minFare);
+    if (maxFare) filter.fare.$lte = Number(maxFare);
+  }
+
+  // Search - Simple way
+  if (search) {
+    filter.$or = [
+      { "pickupLocation.address": { $regex: search, $options: "i" } },
+      { "destinationLocation.address": { $regex: search, $options: "i" } },
+    ];
+  }
+
+  // Get total count
+  const total = await Ride.countDocuments(filter);
+
+  // Get paginated rides with population
+  const rides = await Ride.find(filter)
+    .populate("driver", "name phone rating totalTrips")
+    .populate({
+      path: "driver",
+      populate: {
+        path: "vehicle",
+        select: "model color licensePlate",
+      },
+    })
+    .sort({ createdAt: -1 })
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .lean();
+
+  return {
+    rides,
+    pagination: {
+      page: Number(page),
+      limit: Number(limit),
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 const cancelRequest = async (riderId: string, rideId: string) => {
   const rider = await User.findById(riderId);
