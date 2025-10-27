@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import httpStatus from "http-status-codes";
 import { catchAsync } from "../../utils/catchAsync";
 import { DriverServices } from "./driver.service";
 import { sendResponse } from "../../utils/sendResponse";
+import AppError from "../../errorHelpers/AppError";
 
 const showRideRequests = catchAsync(async (req: Request, res: Response) => {
   const user = await DriverServices.findNearbyRides(req.user.userId);
@@ -47,9 +49,32 @@ const requestApproval = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getDriverEarningsStats = catchAsync(
+  async (req: Request, res: Response) => {
+    const driverId = req.user.userId;
+    const { timeRange = "monthly" } = req.query;
+
+    if (!driverId) {
+      throw new AppError(httpStatus.UNAUTHORIZED, "Driver not authenticated");
+    }
+
+    const stats = await DriverServices.getDriverEarningsStats(
+      driverId,
+      timeRange as any
+    );
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.CREATED,
+      data: stats,
+      message: "Driver earnings stats fetched successfully",
+    });
+  }
+);
+
 export const DriverController = {
   getDriverRideHistory,
   showRideRequests,
   getDriverEarningsHistory,
   requestApproval,
+  getDriverEarningsStats,
 };

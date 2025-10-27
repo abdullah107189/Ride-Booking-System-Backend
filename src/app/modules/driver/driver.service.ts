@@ -143,9 +143,98 @@ const requestApproval = async (driverId: string) => {
 
   return updatedDriver;
 };
+
+// -----------
+const getDriverEarningsStats = async (
+  driverId: string,
+  timeRange: "daily" | "weekly" | "monthly" = "monthly"
+) => {
+  const currentDate = new Date();
+  let startDate: Date;
+
+  switch (timeRange) {
+    case "daily":
+      startDate = new Date(currentDate.setHours(0, 0, 0, 0));
+      break;
+    case "weekly":
+      startDate = new Date(currentDate.setDate(currentDate.getDate() - 7));
+      break;
+    case "monthly":
+      startDate = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        1
+      );
+      break;
+    default:
+      startDate = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        1
+      );
+  }
+
+  // Get driver's total earnings
+  const earningsStats = await Ride.aggregate([
+    {
+      $match: {
+        driver: new mongoose.Types.ObjectId(driverId),
+        status: { $in: ["paid"] },
+        createdAt: { $gte: startDate },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalEarnings: { $sum: "$fare" },
+        totalRides: { $sum: 1 },
+        averageEarnings: { $avg: "$fare" },
+      },
+    },
+  ]);
+
+  // Get earnings by date for chart
+  const earningsByDate = await Ride.aggregate([
+    {
+      $match: {
+        driver: new mongoose.Types.ObjectId(driverId),
+        status: { $in: ["paid"] },
+        createdAt: { $gte: startDate },
+      },
+    },
+    {
+      $group: {
+        _id: {
+          $dateToString: {
+            format: timeRange === "daily" ? "%H:00" : "%Y-%m-%d",
+            date: "$createdAt",
+          },
+        },
+        earnings: { $sum: "$fare" },
+        rides: { $sum: 1 },
+      },
+    },
+    {
+      $sort: { _id: 1 },
+    },
+  ]);
+
+  const result = earningsStats[0] || {
+    totalEarnings: 0,
+    totalRides: 0,
+    averageEarnings: 0,
+  };
+
+  return {
+    ...result,
+    earningsByDate,
+    timeRange,
+  };
+};
 export const DriverServices = {
   getDriverRideHistory,
   findNearbyRides,
   getDriverEarningsHistory,
   requestApproval,
+  getDriverEarningsStats,
 };

@@ -20,4 +20,9 @@ router.patch(
   checkAuth(ROLE.driver),
   DriverController.requestApproval
 );
+router.get(
+  "/earnings-stats",
+  checkAuth(ROLE.driver),
+  DriverController.getDriverEarningsStats
+);
 export const DriverRoutes = router;
