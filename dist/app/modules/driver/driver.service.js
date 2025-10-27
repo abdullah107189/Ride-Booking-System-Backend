@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DriverServices = void 0;
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const mongoose_1 = __importDefault(require("mongoose"));
 const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
@@ -43,20 +44,47 @@ const getDriverEarningsHistory = (driverId) => __awaiter(void 0, void 0, void 0,
     });
     return paidRideDetails;
 });
-const getDriverRideHistory = (driverId) => __awaiter(void 0, void 0, void 0, function* () {
+const getDriverRideHistory = (driverId_1, ...args_1) => __awaiter(void 0, [driverId_1, ...args_1], void 0, function* (driverId, query = {}) {
+    var _a;
+    const { page = 1, limit = 10, status, search, startDate, endDate, minFare, maxFare, } = query;
     const driver = yield user_model_1.default.findById(driverId);
     if (!driver) {
         throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "Driver not found.");
     }
-    const historyRides = yield ride_model_1.Ride.aggregate([
-        {
-            $match: {
-                driver: new mongoose_1.default.Types.ObjectId(driverId),
-                status: {
-                    $in: ["paid", "canceled"],
-                },
-            },
-        },
+    // Build match stage
+    const matchStage = {
+        driver: new mongoose_1.default.Types.ObjectId(driverId),
+        status: { $in: ["paid", "canceled", "completed"] }, // Include completed
+    };
+    // Status filter
+    if (status && status !== "all") {
+        matchStage.status = status;
+    }
+    // Date range filter
+    if (startDate || endDate) {
+        matchStage.createdAt = {};
+        if (startDate)
+            matchStage.createdAt.$gte = new Date(startDate);
+        if (endDate)
+            matchStage.createdAt.$lte = new Date(endDate);
+    }
+    // Fare range filter
+    if (minFare || maxFare) {
+        matchStage.fare = {};
+        if (minFare)
+            matchStage.fare.$gte = Number(minFare);
+        if (maxFare)
+            matchStage.fare.$lte = Number(maxFare);
+    }
+    // Search filter - FIXED
+    if (search) {
+        matchStage.$or = [
+            { "pickupLocation.address": { $regex: search, $options: "i" } },
+            { "destinationLocation.address": { $regex: search, $options: "i" } },
+        ];
+    }
+    const aggregationPipeline = [
+        { $match: matchStage },
         {
             $lookup: {
                 from: "users",
@@ -66,7 +94,10 @@ const getDriverRideHistory = (driverId) => __awaiter(void 0, void 0, void 0, fun
             },
         },
         {
-            $unwind: "$riderInfo",
+            $unwind: {
+                path: "$riderInfo",
+                preserveNullAndEmptyArrays: true, // Keep rides even if no rider info
+            },
         },
         {
             $project: {
@@ -88,15 +119,26 @@ const getDriverRideHistory = (driverId) => __awaiter(void 0, void 0, void 0, fun
                     name: "$riderInfo.name",
                     email: "$riderInfo.email",
                     phone: "$riderInfo.phone",
+                    rating: "$riderInfo.rating",
                 },
             },
         },
-        {
-            $sort: {
-                createdAt: -1,
-            },
-        },
+        { $sort: { createdAt: -1 } },
+    ];
+    // Add pagination
+    const skip = (page - 1) * limit;
+    const paginatedPipeline = [
+        ...aggregationPipeline,
+        { $skip: skip },
+        { $limit: parseInt(limit) },
+    ];
+    const historyRides = yield ride_model_1.Ride.aggregate(paginatedPipeline);
+    // Get total count
+    const totalResult = yield ride_model_1.Ride.aggregate([
+        { $match: matchStage },
+        { $count: "total" },
     ]);
+    const total = ((_a = totalResult[0]) === null || _a === void 0 ? void 0 : _a.total) || 0;
     return {
         driverInfo: {
             _id: driver._id,
@@ -107,6 +149,12 @@ const getDriverRideHistory = (driverId) => __awaiter(void 0, void 0, void 0, fun
             rating: driver.rating,
         },
         history: historyRides,
+        pagination: {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            total,
+            totalPages: Math.ceil(total / limit),
+        },
     };
 });
 // src/controllers/driverController.js
@@ -131,9 +179,78 @@ const requestApproval = (driverId) => __awaiter(void 0, void 0, void 0, function
     // TODO: Send notification to admin
     return updatedDriver;
 });
+// -----------
+const getDriverEarningsStats = (driverId_1, ...args_1) => __awaiter(void 0, [driverId_1, ...args_1], void 0, function* (driverId, timeRange = "monthly") {
+    const currentDate = new Date();
+    let startDate;
+    switch (timeRange) {
+        case "daily":
+            startDate = new Date(currentDate.setHours(0, 0, 0, 0));
+            break;
+        case "weekly":
+            startDate = new Date(currentDate.setDate(currentDate.getDate() - 7));
+            break;
+        case "monthly":
+            startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            break;
+        default:
+            startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    }
+    // Get driver's total earnings
+    const earningsStats = yield ride_model_1.Ride.aggregate([
+        {
+            $match: {
+                driver: new mongoose_1.default.Types.ObjectId(driverId),
+                status: { $in: ["paid"] },
+                createdAt: { $gte: startDate },
+            },
+        },
+        {
+            $group: {
+                _id: null,
+                totalEarnings: { $sum: "$fare" },
+                totalRides: { $sum: 1 },
+                averageEarnings: { $avg: "$fare" },
+            },
+        },
+    ]);
+    // Get earnings by date for chart
+    const earningsByDate = yield ride_model_1.Ride.aggregate([
+        {
+            $match: {
+                driver: new mongoose_1.default.Types.ObjectId(driverId),
+                status: { $in: ["paid"] },
+                createdAt: { $gte: startDate },
+            },
+        },
+        {
+            $group: {
+                _id: {
+                    $dateToString: {
+                        format: timeRange === "daily" ? "%H:00" : "%Y-%m-%d",
+                        date: "$createdAt",
+                    },
+                },
+                earnings: { $sum: "$fare" },
+                rides: { $sum: 1 },
+            },
+        },
+        {
+            $sort: { _id: 1 },
+        },
+    ]);
+    const result = earningsStats[0] || {
+        totalEarnings: 0,
+        totalRides: 0,
+        averageEarnings: 0,
+    };
+    return Object.assign(Object.assign({}, result), { earningsByDate,
+        timeRange });
+});
 exports.DriverServices = {
     getDriverRideHistory,
     findNearbyRides,
     getDriverEarningsHistory,
     requestApproval,
+    getDriverEarningsStats,
 };

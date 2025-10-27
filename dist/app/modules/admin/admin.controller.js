@@ -27,6 +27,16 @@ const changeBlockStatus = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(v
         message: "Changed block status",
     });
 }));
+const changeOnlineStatus = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.params.userId;
+    const result = yield admin_services_1.adminServices.changeOnlineStatus(userId);
+    (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_codes_1.default.CREATED,
+        data: result,
+        message: `User ${(result === null || result === void 0 ? void 0 : result.isOnline) ? "online" : "offline"} status updated successfully`,
+    });
+}));
 const getAllUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield admin_services_1.adminServices.getAllUser();
     (0, sendResponse_1.sendResponse)(res, {
@@ -37,7 +47,7 @@ const getAllUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, 
     });
 }));
 const getAllRide = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield admin_services_1.adminServices.getAllRide();
+    const result = yield admin_services_1.adminServices.getAllRide(req.query);
     (0, sendResponse_1.sendResponse)(res, {
         success: true,
         statusCode: http_status_codes_1.default.OK,
@@ -87,12 +97,23 @@ const getPendingApprovals = (0, catchAsync_1.catchAsync)((req, res) => __awaiter
         message: "Get all pending approval",
     });
 }));
+const getEarningsStats = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { timeRange = "monthly" } = req.query;
+    const stats = yield admin_services_1.adminServices.getEarningsStats(timeRange);
+    res.send({
+        success: true,
+        message: "Earnings stats fetched successfully",
+        data: stats,
+    });
+}));
 exports.adminController = {
     changeBlockStatus,
+    changeOnlineStatus,
     approveDriver,
     getAllUser,
     getAllRide,
     cancelRide,
     getPendingApprovals,
     rejectDriver,
+    getEarningsStats,
 };

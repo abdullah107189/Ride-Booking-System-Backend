@@ -71,12 +71,59 @@ const findNearbyRides = (userId) => __awaiter(void 0, void 0, void 0, function* 
     });
     return nearbyRides;
 });
-const getAllHistory = (riderId) => __awaiter(void 0, void 0, void 0, function* () {
-    const isRide = yield ride_model_1.Ride.find({ rider: riderId });
-    if (!isRide) {
-        throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "Ride not found !");
+const getAllHistory = (riderId_1, ...args_1) => __awaiter(void 0, [riderId_1, ...args_1], void 0, function* (riderId, query = {}) {
+    const { page = 1, limit = 10, status, search, startDate, endDate, minFare, maxFare, } = query;
+    // Build filter object
+    const filter = { rider: new mongoose_1.default.Types.ObjectId(riderId) };
+    // Simple filters
+    if (status && status !== "all")
+        filter.status = status;
+    if (startDate || endDate) {
+        filter.createdAt = {};
+        if (startDate)
+            filter.createdAt.$gte = new Date(startDate);
+        if (endDate)
+            filter.createdAt.$lte = new Date(endDate);
     }
-    return isRide;
+    if (minFare || maxFare) {
+        filter.fare = {};
+        if (minFare)
+            filter.fare.$gte = Number(minFare);
+        if (maxFare)
+            filter.fare.$lte = Number(maxFare);
+    }
+    // Search - Simple way
+    if (search) {
+        filter.$or = [
+            { "pickupLocation.address": { $regex: search, $options: "i" } },
+            { "destinationLocation.address": { $regex: search, $options: "i" } },
+        ];
+    }
+    // Get total count
+    const total = yield ride_model_1.Ride.countDocuments(filter);
+    // Get paginated rides with population
+    const rides = yield ride_model_1.Ride.find(filter)
+        .populate("driver", "name phone rating totalTrips")
+        .populate({
+        path: "driver",
+        populate: {
+            path: "vehicle",
+            select: "model color licensePlate",
+        },
+    })
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean();
+    return {
+        rides,
+        pagination: {
+            page: Number(page),
+            limit: Number(limit),
+            total,
+            totalPages: Math.ceil(total / limit),
+        },
+    };
 });
 const cancelRequest = (riderId, rideId) => __awaiter(void 0, void 0, void 0, function* () {
     const rider = yield user_model_1.default.findById(riderId);

@@ -17,6 +17,7 @@ const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const catchAsync_1 = require("../../utils/catchAsync");
 const driver_service_1 = require("./driver.service");
 const sendResponse_1 = require("../../utils/sendResponse");
+const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
 const showRideRequests = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield driver_service_1.DriverServices.findNearbyRides(req.user.userId);
     (0, sendResponse_1.sendResponse)(res, {
@@ -38,12 +39,15 @@ const getDriverEarningsHistory = (0, catchAsync_1.catchAsync)((req, res) => __aw
 }));
 const getDriverRideHistory = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const driverId = req.user.userId;
-    const rides = yield driver_service_1.DriverServices.getDriverRideHistory(driverId);
+    if (!driverId) {
+        throw new AppError_1.default(http_status_codes_1.default.UNAUTHORIZED, "Driver not authenticated");
+    }
+    const rides = yield driver_service_1.DriverServices.getDriverRideHistory(driverId, req.query);
     (0, sendResponse_1.sendResponse)(res, {
         success: true,
-        statusCode: http_status_codes_1.default.CREATED,
+        statusCode: http_status_codes_1.default.OK,
         data: rides,
-        message: "Driver ride history retrieved successful",
+        message: "Driver ride history retrieved successfully",
     });
 }));
 const requestApproval = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -56,9 +60,24 @@ const requestApproval = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(voi
         message: "Request Approval on Admin",
     });
 }));
+const getDriverEarningsStats = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const driverId = req.user.userId;
+    const { timeRange = "monthly" } = req.query;
+    if (!driverId) {
+        throw new AppError_1.default(http_status_codes_1.default.UNAUTHORIZED, "Driver not authenticated");
+    }
+    const stats = yield driver_service_1.DriverServices.getDriverEarningsStats(driverId, timeRange);
+    (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_codes_1.default.CREATED,
+        data: stats,
+        message: "Driver earnings stats fetched successfully",
+    });
+}));
 exports.DriverController = {
     getDriverRideHistory,
     showRideRequests,
     getDriverEarningsHistory,
     requestApproval,
+    getDriverEarningsStats,
 };

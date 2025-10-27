@@ -9,4 +9,5 @@ const router = (0, express_1.Router)();
 router.get("/earningHistory", (0, checkAuth_1.checkAuth)(user_interface_1.ROLE.driver), driver_controller_1.DriverController.getDriverEarningsHistory);
 router.get("/driver-ride-history", (0, checkAuth_1.checkAuth)(user_interface_1.ROLE.driver), driver_controller_1.DriverController.getDriverRideHistory);
 router.patch("/request-approval", (0, checkAuth_1.checkAuth)(user_interface_1.ROLE.driver), driver_controller_1.DriverController.requestApproval);
+router.get("/earnings-stats", (0, checkAuth_1.checkAuth)(user_interface_1.ROLE.driver), driver_controller_1.DriverController.getDriverEarningsStats);
 exports.DriverRoutes = router;
