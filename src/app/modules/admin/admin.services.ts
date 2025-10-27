@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status-codes";
 import AppError from "../../errorHelpers/AppError";
 import User from "../user/user.model";
@@ -53,13 +54,43 @@ const getAllUser = async () => {
 
   return { users: users, meta: { totalCountDriver, totalCountRider } };
 };
+const getAllRide = async (query: any = {}) => {
+  const {
+    page = 1,
+    limit = 10,
+    status,
+    riderName,
+    driverName,
+    startDate,
+    endDate,
+    minFare,
+    maxFare,
+  } = query;
 
-const getAllRide = async () => {
-  const rides = await Ride.aggregate([
-    {
-      $sort: { createdAt: -1 },
-    },
+  // Build match stage
+  const matchStage: any = {};
 
+  // Status filter
+  if (status && status !== "all") {
+    matchStage.status = status;
+  }
+
+  // Date range filter
+  if (startDate || endDate) {
+    matchStage.createdAt = {};
+    if (startDate) matchStage.createdAt.$gte = new Date(startDate);
+    if (endDate) matchStage.createdAt.$lte = new Date(endDate);
+  }
+
+  // Fare range filter
+  if (minFare || maxFare) {
+    matchStage.fare = {};
+    if (minFare) matchStage.fare.$gte = Number(minFare);
+    if (maxFare) matchStage.fare.$lte = Number(maxFare);
+  }
+
+  const aggregationPipeline: any[] = [
+    { $match: matchStage },
     {
       $lookup: {
         from: "users",
@@ -68,14 +99,12 @@ const getAllRide = async () => {
         as: "riderInfo",
       },
     },
-
     {
       $unwind: {
         path: "$riderInfo",
         preserveNullAndEmptyArrays: true,
       },
     },
-
     {
       $lookup: {
         from: "users",
@@ -84,14 +113,37 @@ const getAllRide = async () => {
         as: "driverInfo",
       },
     },
-
     {
       $unwind: {
         path: "$driverInfo",
         preserveNullAndEmptyArrays: true,
       },
     },
+  ];
 
+  // Add additional filtering for rider and driver names
+  const additionalFilters = [];
+  if (riderName) {
+    additionalFilters.push({
+      "riderInfo.name": { $regex: riderName, $options: "i" },
+    });
+  }
+  if (driverName) {
+    additionalFilters.push({
+      "driverInfo.name": { $regex: driverName, $options: "i" },
+    });
+  }
+
+  if (additionalFilters.length > 0) {
+    aggregationPipeline.push({
+      $match: {
+        $and: additionalFilters,
+      },
+    });
+  }
+
+  // Continue with projection and sorting
+  aggregationPipeline.push(
     {
       $project: {
         _id: 1,
@@ -102,7 +154,6 @@ const getAllRide = async () => {
         statusHistory: 1,
         createdAt: 1,
         updatedAt: 1,
-
         rider: {
           _id: "$riderInfo._id",
           name: "$riderInfo.name",
@@ -111,7 +162,6 @@ const getAllRide = async () => {
           isOnline: "$riderInfo.isOnline",
           isBlocked: "$riderInfo.isBlocked",
         },
-
         driver: {
           _id: "$driverInfo._id",
           name: "$driverInfo.name",
@@ -128,16 +178,73 @@ const getAllRide = async () => {
         },
       },
     },
-  ]);
+    { $sort: { createdAt: -1 } }
+  );
+
+  // Add pagination
+  const skip = (page - 1) * limit;
+  const paginatedPipeline = [
+    ...aggregationPipeline,
+    { $skip: skip },
+    { $limit: parseInt(limit) },
+  ];
+
+  const rides = await Ride.aggregate(paginatedPipeline);
+
+  // Get total count - SIMPLER VERSION
+  const totalMatchStage = { ...matchStage };
+  let total;
+  // If we have name filters, we need to do a separate lookup-based count
+  if (additionalFilters.length > 0) {
+    // Use the same pipeline but just for counting
+    const countPipeline: any[] = [
+      { $match: totalMatchStage },
+      {
+        $lookup: {
+          from: "users",
+          localField: "rider",
+          foreignField: "_id",
+          as: "riderInfo",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "driver",
+          foreignField: "_id",
+          as: "driverInfo",
+        },
+      },
+      {
+        $match: {
+          $and: additionalFilters,
+        },
+      },
+      { $count: "total" },
+    ];
+
+    const totalResult = await Ride.aggregate(countPipeline);
+     total = totalResult[0]?.total || 0;
+  } else {
+    // Simple count without name filters
+     total = await Ride.countDocuments(totalMatchStage);
+  }
 
   if (!rides || rides.length === 0) {
     throw new AppError(httpStatus.NOT_FOUND, "No rides found");
   }
 
-  const totalCount = await Ride.countDocuments();
-
-  return { data: rides, meta: totalCount };
+  return {
+    data: rides,
+    pagination: {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
+
 const cancelRide = async (rideId: string) => {
   const rideInfo = await Ride.findById(rideId);
   if (!rideInfo) {

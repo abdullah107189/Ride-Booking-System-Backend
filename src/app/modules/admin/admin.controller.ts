@@ -38,7 +38,7 @@ const getAllUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 const getAllRide = catchAsync(async (req: Request, res: Response) => {
-  const result = await adminServices.getAllRide();
+  const result = await adminServices.getAllRide(req.query);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
