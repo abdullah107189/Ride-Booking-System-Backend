@@ -98,8 +98,47 @@ const changeOnlineStatus = async (userId: string) => {
   return updatedUser;
 };
 
+const changePassword = async (
+  userId: string,
+  payload: { currentPassword: string; newPassword: string }
+) => {
+  const { currentPassword, newPassword } = payload;
+
+  // Find user
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  // Verify current password
+  const isPasswordValid = await bcryptjs.compare(
+    currentPassword,
+    user.password as string
+  );
+
+  if (!isPasswordValid) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Current password is incorrect");
+  }
+
+  // Hash new password
+  const hashedNewPassword = await bcryptjs.hash(
+    newPassword,
+    Number(envVars.bcrypt_salt_round)
+  );
+
+  // Update password
+  user.password = hashedNewPassword;
+  await user.save();
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { password, ...userWithoutPassword } = user.toObject();
+
+  return userWithoutPassword;
+};
+
 export const userService = {
   findMe,
   updateOwnProfile,
   changeOnlineStatus,
+  changePassword,
 };

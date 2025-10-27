@@ -18,5 +18,10 @@ router.patch(
   checkAuth(...Object.values(ROLE)),
   userController.changeOnlineStatus
 );
+router.patch(
+  "/change-password",
+  checkAuth(...Object.values(ROLE)),
+  userController.changePassword
+);
 
 export const UserRoutes = router;

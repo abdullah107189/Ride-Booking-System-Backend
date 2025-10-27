@@ -68,6 +68,7 @@ const userLogout = catchAsync(async (req: Request, res: Response) => {
     data: null,
   });
 });
+
 export const AuthController = {
   createUser,
   loginUser,

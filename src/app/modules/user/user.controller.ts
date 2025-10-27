@@ -4,6 +4,7 @@ import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from "http-status-codes";
 import { userService } from "./user.service";
 import { JwtPayload } from "jsonwebtoken";
+import AppError from "../../errorHelpers/AppError";
 
 const findMe = catchAsync(async (req: Request, res: Response) => {
   const riderInfo = await userService.findMe(req.user.userId);
@@ -40,8 +41,28 @@ const changeOnlineStatus = catchAsync(async (req: Request, res: Response) => {
     message: "Online status updated successful",
   });
 });
+const changePassword = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
+  const { currentPassword, newPassword } = req.body;
+
+  if (!userId) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "User not authenticated");
+  }
+
+  const result = await userService.changePassword(userId, {
+    currentPassword,
+    newPassword,
+  });
+
+  res.send({
+    success: true,
+    message: "Password changed successfully",
+    data: result,
+  });
+});
 export const userController = {
   findMe,
   updateOwnProfile,
   changeOnlineStatus,
+  changePassword,
 };
