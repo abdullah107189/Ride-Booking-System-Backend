@@ -30,12 +30,16 @@ const getDriverEarningsHistory = catchAsync(
 );
 const getDriverRideHistory = catchAsync(async (req: Request, res: Response) => {
   const driverId = req.user.userId;
-  const rides = await DriverServices.getDriverRideHistory(driverId);
+  if (!driverId) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Driver not authenticated");
+  }
+  const rides = await DriverServices.getDriverRideHistory(driverId, req.query);
+
   sendResponse(res, {
     success: true,
-    statusCode: httpStatus.CREATED,
+    statusCode: httpStatus.OK,
     data: rides,
-    message: "Driver ride history retrieved successful",
+    message: "Driver ride history retrieved successfully",
   });
 });
 const requestApproval = catchAsync(async (req: Request, res: Response) => {

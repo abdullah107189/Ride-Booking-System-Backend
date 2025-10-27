@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose from "mongoose";
 import AppError from "../../errorHelpers/AppError";
 import httpStatus from "http-status-codes";
@@ -39,21 +40,59 @@ const getDriverEarningsHistory = async (driverId: string) => {
 
   return paidRideDetails;
 };
-const getDriverRideHistory = async (driverId: string) => {
+
+const getDriverRideHistory = async (driverId: string, query: any = {}) => {
+  const {
+    page = 1,
+    limit = 10,
+    status,
+    search,
+    startDate,
+    endDate,
+    minFare,
+    maxFare,
+  } = query;
+
   const driver = await User.findById(driverId);
   if (!driver) {
     throw new AppError(httpStatus.NOT_FOUND, "Driver not found.");
   }
 
-  const historyRides = await Ride.aggregate([
-    {
-      $match: {
-        driver: new mongoose.Types.ObjectId(driverId),
-        status: {
-          $in: ["paid", "canceled"],
-        },
-      },
-    },
+  // Build match stage
+  const matchStage: any = {
+    driver: new mongoose.Types.ObjectId(driverId),
+    status: { $in: ["paid", "canceled", "completed"] }, // Include completed
+  };
+
+  // Status filter
+  if (status && status !== "all") {
+    matchStage.status = status;
+  }
+
+  // Date range filter
+  if (startDate || endDate) {
+    matchStage.createdAt = {};
+    if (startDate) matchStage.createdAt.$gte = new Date(startDate);
+    if (endDate) matchStage.createdAt.$lte = new Date(endDate);
+  }
+
+  // Fare range filter
+  if (minFare || maxFare) {
+    matchStage.fare = {};
+    if (minFare) matchStage.fare.$gte = Number(minFare);
+    if (maxFare) matchStage.fare.$lte = Number(maxFare);
+  }
+
+  // Search filter - FIXED
+  if (search) {
+    matchStage.$or = [
+      { "pickupLocation.address": { $regex: search, $options: "i" } },
+      { "destinationLocation.address": { $regex: search, $options: "i" } },
+    ];
+  }
+
+  const aggregationPipeline: any[] = [
+    { $match: matchStage },
     {
       $lookup: {
         from: "users",
@@ -63,7 +102,10 @@ const getDriverRideHistory = async (driverId: string) => {
       },
     },
     {
-      $unwind: "$riderInfo",
+      $unwind: {
+        path: "$riderInfo",
+        preserveNullAndEmptyArrays: true, // Keep rides even if no rider info
+      },
     },
     {
       $project: {
@@ -80,21 +122,35 @@ const getDriverRideHistory = async (driverId: string) => {
         acceptedAt: 1,
         startedAt: 1,
         completedAt: 1,
-
         rider: {
           _id: "$riderInfo._id",
           name: "$riderInfo.name",
           email: "$riderInfo.email",
           phone: "$riderInfo.phone",
+          rating: "$riderInfo.rating",
         },
       },
     },
-    {
-      $sort: {
-        createdAt: -1,
-      },
-    },
+    { $sort: { createdAt: -1 } },
+  ];
+
+  // Add pagination
+  const skip = (page - 1) * limit;
+  const paginatedPipeline = [
+    ...aggregationPipeline,
+    { $skip: skip },
+    { $limit: parseInt(limit) },
+  ];
+
+  const historyRides = await Ride.aggregate(paginatedPipeline);
+
+  // Get total count
+  const totalResult = await Ride.aggregate([
+    { $match: matchStage },
+    { $count: "total" },
   ]);
+
+  const total = totalResult[0]?.total || 0;
 
   return {
     driverInfo: {
@@ -106,6 +162,12 @@ const getDriverRideHistory = async (driverId: string) => {
       rating: driver.rating,
     },
     history: historyRides,
+    pagination: {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
   };
 };
 // src/controllers/driverController.js
