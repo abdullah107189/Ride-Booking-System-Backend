@@ -25,6 +25,24 @@ const changeBlockStatus = async (userId: string) => {
   return updatedUser;
 };
 
+const changeOnlineStatus = async (userId: string) => {
+  if (!userId) {
+    throw new AppError(httpStatus.NOT_FOUND, "User ID not found");
+  }
+
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { isOnline: !user.isOnline },
+    { new: true, runValidators: true }
+  ).select("name email isOnline role");
+
+  return updatedUser;
+};
 const getAllUser = async () => {
   const users = await User.find({}).sort({ createdAt: -1 });
   if (!users) {
@@ -216,6 +234,7 @@ const rejectDriver = async (driverId: string, adminId: string) => {
 
 export const adminServices = {
   changeBlockStatus,
+  changeOnlineStatus,
   approveDriver,
   getAllUser,
   getAllRide,

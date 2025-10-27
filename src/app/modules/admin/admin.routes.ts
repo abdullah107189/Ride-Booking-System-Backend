@@ -12,6 +12,11 @@ router.patch(
   adminController.changeBlockStatus
 );
 router.patch(
+  "/change-online-status/:userId",
+  checkAuth(ROLE.admin),
+  adminController.changeOnlineStatus
+);
+router.patch(
   "/rides/:id/cancel",
   checkAuth(ROLE.admin),
   adminController.cancelRide

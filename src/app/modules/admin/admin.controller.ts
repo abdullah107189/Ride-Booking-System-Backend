@@ -14,6 +14,18 @@ const changeBlockStatus = catchAsync(async (req: Request, res: Response) => {
     message: "Changed block status",
   });
 });
+const changeOnlineStatus = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+  const result = await adminServices.changeOnlineStatus(userId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    data: result,
+    message: `User ${
+      result?.isOnline ? "online" : "offline"
+    } status updated successfully`,
+  });
+});
 
 const getAllUser = catchAsync(async (req: Request, res: Response) => {
   const result = await adminServices.getAllUser();
@@ -79,6 +91,7 @@ const getPendingApprovals = catchAsync(async (req: Request, res: Response) => {
 
 export const adminController = {
   changeBlockStatus,
+  changeOnlineStatus,
   approveDriver,
   getAllUser,
   getAllRide,
