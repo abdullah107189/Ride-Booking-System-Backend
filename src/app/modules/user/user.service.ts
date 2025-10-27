@@ -109,15 +109,23 @@ const changePassword = async (
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
-
-  // Verify current password
+  // Verify current password - FIXED VERSION
   const isPasswordValid = await bcryptjs.compare(
     currentPassword,
-    user.password as string
+    user.password
   );
 
   if (!isPasswordValid) {
     throw new AppError(httpStatus.BAD_REQUEST, "Current password is incorrect");
+  }
+
+  // Check if new password is same as current password
+  const isSamePassword = await bcryptjs.compare(newPassword, user.password);
+  if (isSamePassword) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "New password cannot be the same as current password"
+    );
   }
 
   // Hash new password
