@@ -232,6 +232,138 @@ const rejectDriver = async (driverId: string, adminId: string) => {
   return updatedDriver;
 };
 
+const getEarningsStats = async (
+  timeRange: "daily" | "weekly" | "monthly" = "monthly"
+) => {
+  const currentDate = new Date();
+  let startDate: Date;
+
+  switch (timeRange) {
+    case "daily":
+      startDate = new Date(currentDate.setHours(0, 0, 0, 0));
+      break;
+    case "weekly":
+      startDate = new Date(currentDate.setDate(currentDate.getDate() - 7));
+      break;
+    case "monthly":
+      startDate = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        1
+      );
+      break;
+    default:
+      startDate = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        1
+      );
+  }
+
+  // Get total earnings
+  const totalEarnings = await Ride.aggregate([
+    {
+      $match: {
+        status: { $in: ["paid"] },
+        createdAt: { $gte: startDate },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        total: { $sum: "$fare" },
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  // Get earnings by date for chart
+  const earningsByDate = await Ride.aggregate([
+    {
+      $match: {
+        status: { $in: ["paid"] },
+        createdAt: { $gte: startDate },
+      },
+    },
+    {
+      $group: {
+        _id: {
+          $dateToString: {
+            format: timeRange === "daily" ? "%H:00" : "%Y-%m-%d",
+            date: "$createdAt",
+          },
+        },
+        earnings: { $sum: "$fare" },
+        rides: { $sum: 1 },
+      },
+    },
+    {
+      $sort: { _id: 1 },
+    },
+  ]);
+
+  // Get earnings by vehicle type
+  const earningsByVehicle = await Ride.aggregate([
+    {
+      $match: {
+        status: { $in: ["paid"] },
+        createdAt: { $gte: startDate },
+      },
+    },
+    {
+      $group: {
+        _id: "$vehicleType",
+        earnings: { $sum: "$fare" },
+        rides: { $sum: 1 },
+      },
+    },
+  ]);
+
+  // Get top drivers
+  const topDrivers = await Ride.aggregate([
+    {
+      $match: {
+        status: { $in: ["paid"] },
+        createdAt: { $gte: startDate },
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "driver",
+        foreignField: "_id",
+        as: "driverInfo",
+      },
+    },
+    {
+      $unwind: "$driverInfo",
+    },
+    {
+      $group: {
+        _id: "$driver",
+        earnings: { $sum: "$fare" },
+        rides: { $sum: 1 },
+        driverName: { $first: "$driverInfo.name" },
+      },
+    },
+    {
+      $sort: { earnings: -1 },
+    },
+    {
+      $limit: 5,
+    },
+  ]);
+
+  return {
+    totalEarnings: totalEarnings[0]?.total || 0,
+    totalRides: totalEarnings[0]?.count || 0,
+    earningsByDate,
+    earningsByVehicle,
+    topDrivers,
+    timeRange,
+  };
+};
+
 export const adminServices = {
   changeBlockStatus,
   changeOnlineStatus,
@@ -241,4 +373,5 @@ export const adminServices = {
   cancelRide,
   getPendingApprovals,
   rejectDriver,
+  getEarningsStats,
 };

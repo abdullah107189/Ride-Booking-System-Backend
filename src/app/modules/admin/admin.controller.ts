@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import httpStatus from "http-status-codes";
 import { catchAsync } from "../../utils/catchAsync";
@@ -89,6 +90,17 @@ const getPendingApprovals = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getEarningsStats = catchAsync(async (req: Request, res: Response) => {
+  const { timeRange = "monthly" } = req.query;
+
+  const stats = await adminServices.getEarningsStats(timeRange as any);
+
+  res.send({
+    success: true,
+    message: "Earnings stats fetched successfully",
+    data: stats,
+  });
+});
 export const adminController = {
   changeBlockStatus,
   changeOnlineStatus,
@@ -98,4 +110,5 @@ export const adminController = {
   cancelRide,
   getPendingApprovals,
   rejectDriver,
+  getEarningsStats,
 };

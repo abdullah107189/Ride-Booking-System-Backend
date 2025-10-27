@@ -36,5 +36,10 @@ router.patch(
   checkAuth(ROLE.admin),
   adminController.rejectDriver
 );
+router.get(
+  "/earnings-stats",
+  checkAuth(ROLE.admin),
+  adminController.getEarningsStats
+);
 
 export const AdminRoutes = router;
