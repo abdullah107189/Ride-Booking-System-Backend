@@ -17,6 +17,7 @@ const catchAsync_1 = require("../../utils/catchAsync");
 const sendResponse_1 = require("../../utils/sendResponse");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const user_service_1 = require("./user.service");
+const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
 const findMe = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const riderInfo = yield user_service_1.userService.findMe(req.user.userId);
     (0, sendResponse_1.sendResponse)(res, {
@@ -47,8 +48,26 @@ const changeOnlineStatus = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(
         message: "Online status updated successful",
     });
 }));
+const changePassword = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+    const { currentPassword, newPassword } = req.body;
+    if (!userId) {
+        throw new AppError_1.default(http_status_codes_1.default.UNAUTHORIZED, "User not authenticated");
+    }
+    const result = yield user_service_1.userService.changePassword(userId, {
+        currentPassword,
+        newPassword,
+    });
+    res.send({
+        success: true,
+        message: "Password changed successfully",
+        data: result,
+    });
+}));
 exports.userController = {
     findMe,
     updateOwnProfile,
     changeOnlineStatus,
+    changePassword,
 };

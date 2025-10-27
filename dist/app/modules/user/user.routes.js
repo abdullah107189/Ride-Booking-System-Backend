@@ -11,4 +11,5 @@ const router = (0, express_1.Router)();
 router.get("/me", (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.ROLE)), user_controller_1.userController.findMe);
 router.patch("/updateOwnProfile", (0, validationRequest_1.validateRequest)(user_validation_1.updateUserZodSchema), (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.ROLE)), user_controller_1.userController.updateOwnProfile);
 router.patch("/changeOnlineStatus", (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.ROLE)), user_controller_1.userController.changeOnlineStatus);
+router.patch("/change-password", (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.ROLE)), user_controller_1.userController.changePassword);
 exports.UserRoutes = router;

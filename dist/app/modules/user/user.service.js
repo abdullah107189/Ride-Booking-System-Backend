@@ -95,8 +95,35 @@ const changeOnlineStatus = (userId) => __awaiter(void 0, void 0, void 0, functio
     const updatedUser = yield user_model_1.default.findByIdAndUpdate(userId, { isOnline: !(user === null || user === void 0 ? void 0 : user.isOnline) }, { new: true, runValidators: true }).select("name email isOnline");
     return updatedUser;
 });
+const changePassword = (userId, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const { currentPassword, newPassword } = payload;
+    // Find user
+    const user = yield user_model_1.default.findById(userId);
+    if (!user) {
+        throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "User not found");
+    }
+    // Verify current password - FIXED VERSION
+    const isPasswordValid = yield bcryptjs_1.default.compare(currentPassword, user.password);
+    if (!isPasswordValid) {
+        throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Current password is incorrect");
+    }
+    // Check if new password is same as current password
+    const isSamePassword = yield bcryptjs_1.default.compare(newPassword, user.password);
+    if (isSamePassword) {
+        throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "New password cannot be the same as current password");
+    }
+    // Hash new password
+    const hashedNewPassword = yield bcryptjs_1.default.hash(newPassword, Number(env_1.envVars.bcrypt_salt_round));
+    // Update password
+    user.password = hashedNewPassword;
+    yield user.save();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const _a = user.toObject(), { password } = _a, userWithoutPassword = __rest(_a, ["password"]);
+    return userWithoutPassword;
+});
 exports.userService = {
     findMe,
     updateOwnProfile,
     changeOnlineStatus,
+    changePassword,
 };

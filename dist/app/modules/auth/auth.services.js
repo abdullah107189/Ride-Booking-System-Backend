@@ -44,7 +44,8 @@ const createUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
 });
 const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { password, email } = payload;
-    const isUser = yield user_model_1.default.findOne({ email });
+    // Find user with password field
+    const isUser = yield user_model_1.default.findOne({ email }).select("+password");
     if (!isUser) {
         throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "User Not Found");
     }
@@ -52,14 +53,18 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     if (isUser.isBlocked) {
         throw new AppError_1.default(http_status_codes_1.default.FORBIDDEN, "Your account has been blocked. Please contact support.");
     }
-    yield bcryptjs_1.default.compare(password, isUser.password);
-    if (isUser && isUser.role === user_interface_1.ROLE.rider) {
+    // Verify password - THIS WAS MISSING
+    const isPasswordValid = yield bcryptjs_1.default.compare(password, isUser.password);
+    if (!isPasswordValid) {
+        throw new AppError_1.default(http_status_codes_1.default.UNAUTHORIZED, "Invalid email or password");
+    }
+    // Remove sensitive fields based on role
+    if (isUser.role === user_interface_1.ROLE.rider) {
         delete isUser.isApproved;
         delete isUser.totalEarnings;
         delete isUser.rating;
         delete isUser.totalRides;
         delete isUser.earnings;
-        return isUser;
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const _a = isUser.toObject(), { password: pass } = _a, result = __rest(_a, ["password"]);
